@@ -1,0 +1,12 @@
+import type { Feature } from "../model";
+
+export const yandexMetrikaFeature: Feature = {
+  id: "yandex-metrika",
+  name: "Яндекс.Метрика",
+  description: "Установка счётчика Яндекс.Метрики для сбора статистики посещаемости и поведения пользователей.",
+  category: "Analytics",
+  status: "included",
+  estimatedHours: {min: 1, max: 2},
+  priceRange:{min: 30, max: 50},
+  articleId: 'yandex-metrika-explained'
+};

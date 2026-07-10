@@ -3,7 +3,7 @@ import type {FeatureCategory} from "@/entities/feature/category";
 export type FeatureStatus =
   | "included"
   | "optional"
-  | "not_required";
+  | "notRequired";
 
 export interface Feature {
   id: string;
@@ -15,5 +15,10 @@ export interface Feature {
     min: number;
     max: number;
   };
+  priceRange?: {
+    min: number;
+    max: number;
+  };
   comment?: string;
+  articleId?: string;
 }
