@@ -2,6 +2,7 @@ import {getFeatures} from "@/entities/feature/repository";
 import {FeatureCard} from "@/entities/feature/ui/FeatureCard";
 import type {Feature} from "@/entities/feature/model";
 import type {FeatureCategory} from "@/entities/feature/category";
+import {Collapsible} from "@/shared/ui/Collapsible";
 
 function groupByCategory(features: Feature[]): Record<FeatureCategory, Feature[]> {
   const result = {} as Record<FeatureCategory, Feature[]>;
@@ -37,22 +38,24 @@ export default function FeaturesPage() {
 
   return (
     <main>
-      <h1>Feature Catalog</h1>
+      <h1>Все функции сайта</h1>
 
-      <p>Итого часов (included): {total.min}–{total.max} ч</p>
+      <p className="summary">Итого часов (included): {total.min}–{total.max} ч.</p>
 
       {Object.entries(grouped).map(([category, categoryFeatures]) => {
         const categoryTotal = sumIncludedHours(categoryFeatures);
 
         return (
-          <section key={category}>
-            <h2>{category} ({categoryTotal.min}–{categoryTotal.max} ч)</h2>
+          <Collapsible
+            key={category}
+            summary={`${category} (${categoryTotal.min}–${categoryTotal.max} ч.)`}
+          >
             <ul>
               {categoryFeatures.map((feature) => (
                 <FeatureCard key={feature.id} feature={feature} />
               ))}
             </ul>
-          </section>
+          </Collapsible>
         );
       })}
     </main>

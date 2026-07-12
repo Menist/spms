@@ -4,6 +4,7 @@ export const imcCrmProject: Project = {
   id: "imc-crm",
   name: "Внутренняя CRM для IMC Computers",
   clientId: "imc-computers",
+  status: "active",
   featureIds: [
     "ssl-certificate",
     "content-security-policy",

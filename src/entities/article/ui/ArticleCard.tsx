@@ -1,4 +1,5 @@
 import type {KnowledgeArticle} from "@/entities/article/model";
+import {Collapsible} from "@/shared/ui/Collapsible";
 
 interface ArticleCardProps {
   article: KnowledgeArticle;
@@ -6,9 +7,8 @@ interface ArticleCardProps {
 
 export function ArticleCard({article}: ArticleCardProps) {
   return (
-    <li>
-      <h3>{article.title}</h3>
+    <Collapsible summary={article.title}>
       <p>{article.content}</p>
-    </li>
+    </Collapsible>
   );
 }

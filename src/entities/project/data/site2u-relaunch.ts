@@ -1,9 +1,11 @@
-import type {Project} from "../model";
+import {Project} from "@/entities/project/model";
 
 export const site2uRelaunchProject: Project = {
   id: "site2u-relaunch",
   name: "Редизайн сайта site2u.by",
   clientId: "imc-computers",
+  status: "active",
+  templateId: "corporate",
   featureIds: [
     "robots-txt",
     "schema-org",

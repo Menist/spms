@@ -20,14 +20,17 @@ export default async function ArticlePage({params}: ArticlePageProps) {
   return (
     <main>
       <h1>{article.title}</h1>
-      <p>{article.content}</p>
+
+      <div className="card">
+        <p>{article.content}</p>
+      </div>
 
       {relatedFeatures.length > 0 && (
         <>
-          <h2>Связанные фичи</h2>
+          <h2 style={{marginTop: "24px"}}>Связанные фичи</h2>
           <ul>
             {relatedFeatures.map((feature) => (
-              <li key={feature.id}>
+              <li key={feature.id} className="card">
                 <Link href={`/features/${feature.id}`}>{feature.name}</Link>
               </li>
             ))}

@@ -8,5 +8,5 @@ export const googleAnalyticsFeature: Feature = {
   status: 'included',
   estimatedHours: {min: 1, max: 2},
   priceRange: {min: 50, max: 100},
-  articleId: 'google-analytics-explained'
+  articleId: 'analytics-explained'
 };

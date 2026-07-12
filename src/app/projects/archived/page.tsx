@@ -5,7 +5,7 @@ import {getProjects} from "@/entities/project/repository";
 import type {Project} from "@/entities/project/model";
 import Link from "next/link";
 
-export default function ProjectsPage() {
+export default function ArchivedProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -14,22 +14,23 @@ export default function ProjectsPage() {
     setIsLoaded(true);
   }, []);
 
-  const activeProjects = projects.filter((p) => p.status === "active");
+  const archivedProjects = projects.filter((p) => p.status === "archived");
 
   return (
     <main>
-      <h1>Проекты</h1>
+      <h1>Архив проектов</h1>
 
-      <p className="summary">
-        <Link href="/projects/new">+ Новый проект</Link>
-        {" · "}
-        <Link href="/projects/archived">Архив</Link>
+      <p className="meta back-link">
+        <Link href="/projects">← Активные проекты</Link>
       </p>
 
       {!isLoaded && <p className="meta">Загрузка...</p>}
+      {isLoaded && archivedProjects.length === 0 && (
+        <p className="meta">В архиве пока пусто.</p>
+      )}
 
       <ul>
-        {activeProjects.map((project) => (
+        {archivedProjects.map((project) => (
           <li key={project.id} className="card">
             <Link href={`/projects/${project.id}`}>{project.name}</Link>
           </li>

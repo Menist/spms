@@ -1,36 +1,60 @@
-import {getProjects} from "@/entities/project/repository";
+"use client";
+
+import {useEffect, useState} from "react";
+import {use} from "react";
+import {getProjectById} from "@/entities/project/repository";
 import {getFeatures} from "@/entities/feature/repository";
-import {notFound} from "next/navigation";
+import type {Project} from "@/entities/project/model";
+import Link from "next/link";
 
 interface TechSpecPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function ProjectTechSpecPage({params}: TechSpecPageProps) {
-  const {id} = await params;
-  const project = getProjects().find((p) => p.id === id);
+export default function ProjectTechSpecPage({params}: TechSpecPageProps) {
+  const {id} = use(params);
+  const [project, setProject] = useState<Project | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  if (!project) {
-    notFound();
+  useEffect(() => {
+    setProject(getProjectById(id) ?? null);
+    setIsLoaded(true);
+  }, [id]);
+
+  if (!isLoaded) {
+    return <main><p className="meta">Загрузка...</p></main>;
   }
 
-  const projectFeatures = getFeatures()
-    .filter((f) => project.featureIds.includes(f.id))
-    .filter((f) => f.status === "included");
+  if (!project) {
+    return (
+      <main>
+        <h1>Проект не найден</h1>
+        <p className="meta back-link"><Link href="/projects">Вернуться к списку проектов</Link></p>
+      </main>
+    );
+  }
+
+  const projectFeatures = getFeatures().filter((f) => project.featureIds.includes(f.id));
 
   return (
     <main>
       <h1>Техническое задание: {project.name}</h1>
 
-      {projectFeatures.map((feature) => (
-        <section key={feature.id}>
-          <h2>{feature.name}</h2>
-          <p>{feature.description}</p>
+      <p className="meta back-link">
+        <Link href={`/projects/${project.id}`}>← К проекту</Link>
+        {" · "}
+        <Link href={`/projects/${project.id}/edit`}>Редактировать проект</Link>
+      </p>
 
-          {feature.comment && <p>Примечание: {feature.comment}</p>}
+      {projectFeatures.map((feature) => (
+        <section key={feature.id} className="card">
+          <h2>{feature.name}</h2>
+          <p className="meta">{feature.description}</p>
+
+          {feature.comment && <p className="meta">Примечание: {feature.comment}</p>}
 
           {feature.estimatedHours && (
-            <p>
+            <p className="meta">
               Трудоёмкость: {feature.estimatedHours.min}–{feature.estimatedHours.max} ч.
             </p>
           )}

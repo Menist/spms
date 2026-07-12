@@ -8,5 +8,5 @@ export const sslCertificateFeature: Feature = {
   status: 'included',
   estimatedHours: {min: 1, max: 1},
   priceRange: {min: 50, max: 100},
-  articleId: 'ssl-certificate-explained'
+  articleId: 'ssl-explained'
 };
