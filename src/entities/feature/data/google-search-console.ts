@@ -7,6 +7,7 @@ export const googleSearchConsoleFeature: Feature = {
   category: "Analytics",
   status: "included",
   estimatedHours: {min: 1, max: 1},
-  priceRange:{min: 20, max: 30},
-  articleId: 'google-search-console-explained'
+  priceRange: {min: 20, max: 30},
+  articleId: 'google-search-console-explained',
+  relatedFeatureIds: ['google-analytics'],
 };

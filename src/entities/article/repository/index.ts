@@ -37,6 +37,8 @@ import {portfolioCasesExplainedArticle} from "@/entities/article/data/portfolio-
 import {multilingualExplainedArticle} from "@/entities/article/data/multilingual-explained";
 import {onlineChatExplainedArticle} from "@/entities/article/data/online-chat-explained";
 import {locationMapExplainedArticle} from "@/entities/article/data/location-map-explained";
+import {recaptchaAntispamExplained} from "@/entities/article/data/recaptcha-antispam-explained";
+import {rateLimitingExplained} from "@/entities/article/data/rate-limiting-explained";
 
 
 const articles: KnowledgeArticle[] = [
@@ -77,7 +79,9 @@ const articles: KnowledgeArticle[] = [
   portfolioCasesExplainedArticle,
   multilingualExplainedArticle,
   onlineChatExplainedArticle,
-  locationMapExplainedArticle
+  locationMapExplainedArticle,
+  recaptchaAntispamExplained,
+  rateLimitingExplained
 ];
 
 export function getArticles(): KnowledgeArticle[] {

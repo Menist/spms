@@ -8,5 +8,6 @@ export const breadcrumbsMicrodataFeature: Feature = {
   status: "optional",
   estimatedHours: {min: 1, max: 2},
   priceRange: {min: 30, max: 50},
-  articleId: 'breadcrumbs-microdata-explained'
+  articleId: 'breadcrumbs-microdata-explained',
+  relatedFeatureIds: ['schema-org'],
 };

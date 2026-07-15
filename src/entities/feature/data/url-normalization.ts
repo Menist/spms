@@ -8,5 +8,6 @@ export const urlNormalizationFeature: Feature = {
   status: "included",
   estimatedHours: {min: 1, max: 2},
   priceRange:{min: 30, max: 50},
-  articleId: 'url-normalization-explained'
+  articleId: 'url-normalization-explained',
+  relatedFeatureIds: ['custom-404-page'],
 };

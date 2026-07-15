@@ -8,5 +8,6 @@ export const custom404PageFeature: Feature = {
   status: "included",
   estimatedHours: {min: 1, max: 2},
   priceRange:{min: 30, max: 60},
-  articleId: 'custom-404-page-explained'
+  articleId: 'custom-404-page-explained',
+  relatedFeatureIds: ['url-normalization'],
 };

@@ -46,6 +46,9 @@ import {multilingualFeature} from "@/entities/feature/data/multilingual";
 import {onlineChatFeature} from "@/entities/feature/data/online-chat";
 import {locationMapFeature} from "@/entities/feature/data/location-map";
 
+import {rateLimitingFeature} from "@/entities/feature/data/rate-limiting";
+import {recaptchaAntispamFeature} from "@/entities/feature/data/recaptcha-antispam";
+
 const features: Feature[] = [
   robotsTxtFeature,
   schemaOrgFeature,
@@ -64,6 +67,8 @@ const features: Feature[] = [
   contentSecurityPolicyFeature,
   securityHeadersFeature,
   protectedServiceFilesFeature,
+  rateLimitingFeature,
+  recaptchaAntispamFeature,
 
   imageOptimizationFeature,
   cssJsMinificationFeature,
@@ -92,6 +97,7 @@ const features: Feature[] = [
   multilingualFeature,
   onlineChatFeature,
   locationMapFeature,
+
 ];
 
 export function getFeatures(): Feature[] {

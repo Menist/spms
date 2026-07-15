@@ -8,5 +8,6 @@ export const blogNewsFeature: Feature = {
   status: "optional",
   estimatedHours: {min: 8, max: 16},
   priceRange: {min: 250, max: 500},
-  articleId: 'blog-news-explained'
+  articleId: 'blog-news-explained',
+  relatedFeatureIds: ['portfolio-cases'],
 };

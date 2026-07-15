@@ -8,5 +8,6 @@ export const securityHeadersFeature: Feature = {
   status: "included",
   estimatedHours: {min: 1, max: 2},
   articleId: 'security-headers-explained',
-  priceRange:{min: 50, max: 80},
+  priceRange: {min: 50, max: 80},
+  relatedFeatureIds: ["ssl-certificate", "content-security-policy", "protected-service-files"],
 };

@@ -7,6 +7,7 @@ export const yandexWebmasterFeature: Feature = {
   category: "Analytics",
   status: "included",
   estimatedHours: {min: 1, max: 1},
-  priceRange:{min: 20, max: 30},
-  articleId: 'yandex-webmaster-explained'
+  priceRange: {min: 20, max: 30},
+  articleId: 'yandex-webmaster-explained',
+  relatedFeatureIds: ['yandex-metrika'],
 };

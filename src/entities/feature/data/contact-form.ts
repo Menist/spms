@@ -8,5 +8,6 @@ export const contactFormFeature: Feature = {
   status: 'optional',
   estimatedHours: {min: 3, max: 6},
   priceRange: {min: 50, max: 100},
-  articleId: 'contact-form-explained'
+  articleId: 'contact-form-explained',
+  relatedFeatureIds: ['recaptcha-antispam', 'online-chat', 'location-map'],
 };

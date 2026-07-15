@@ -8,5 +8,6 @@ export const cssJsMinificationFeature: Feature = {
   status: "included",
   estimatedHours: {min: 1, max: 1},
   priceRange:{min: 30, max: 50},
-  articleId: 'css-js-minification-explained'
+  articleId: 'css-js-minification-explained',
+  relatedFeatureIds: ['image-optimization', 'gzip-brotli-compression'],
 };

@@ -8,5 +8,6 @@ export const contrastReadabilityFeature: Feature = {
   status: "optional",
   estimatedHours: {min: 1, max: 2},
   priceRange: {min: 30, max: 50},
-  articleId: 'contrast-readability-explained'
+  articleId: 'contrast-readability-explained',
+  relatedFeatureIds: ['alt-text'],
 };

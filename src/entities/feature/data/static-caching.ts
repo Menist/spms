@@ -8,5 +8,6 @@ export const staticCachingFeature: Feature = {
   status: "included",
   estimatedHours: {min: 1, max: 2},
   priceRange:{min: 30, max: 60},
-  articleId: 'static-caching-explained'
+  articleId: 'static-caching-explained',
+  relatedFeatureIds: ['gzip-brotli-compression', 'cdn-static-files'],
 };

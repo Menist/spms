@@ -8,5 +8,6 @@ export const canonicalFeature: Feature = {
   status: "included",
   estimatedHours: {min: 1, max: 1},
   priceRange: {min: 20, max: 30},
-  articleId: 'canonical-explained'
+  articleId: 'canonical-explained',
+  relatedFeatureIds: ['schema-org', 'sitemap-xml', 'open-graph'],
 };

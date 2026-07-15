@@ -8,5 +8,6 @@ export const altTextFeature: Feature = {
   status: "included",
   estimatedHours: {min: 1, max: 2},
   priceRange: {min: 30, max: 60},
-  articleId: 'alt-text-explained'
+  articleId: 'alt-text-explained',
+  relatedFeatureIds: ['contrast-readability'],
 };

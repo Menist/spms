@@ -8,5 +8,6 @@ export const protectedServiceFilesFeature: Feature = {
   status: "included",
   estimatedHours: {min: 1, max: 1},
   articleId: 'protected-service-files-explained',
-  priceRange:{min: 30, max: 50},
+  priceRange: {min: 30, max: 50},
+  relatedFeatureIds: ['security-headers'],
 };

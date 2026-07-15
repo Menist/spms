@@ -8,5 +8,6 @@ export const openGraphFeature: Feature = {
   status: "included",
   estimatedHours: {min: 1, max: 2},
   priceRange: {min: 30, max: 50},
-  articleId: 'open-graph-explained'
+  articleId: 'open-graph-explained',
+  relatedFeatureIds: ['schema-org', 'canonical'],
 };

@@ -8,5 +8,6 @@ export const carouselSliderFeature: Feature = {
   status: "optional",
   estimatedHours: {min: 3, max: 6},
   priceRange: {min: 90, max: 180},
-  articleId: 'carousel-slider-explained'
+  articleId: 'scroll-animations-explained',
+  relatedFeatureIds: ['dark-light-theme', 'carousel-slider'],
 };

@@ -8,5 +8,6 @@ export const locationMapFeature: Feature = {
   status: "optional",
   estimatedHours: {min: 1, max: 2},
   priceRange: {min: 30, max: 60},
-  articleId: 'location-map-explained'
+  articleId: 'location-map-explained',
+  relatedFeatureIds: ['contact-form'],
 };

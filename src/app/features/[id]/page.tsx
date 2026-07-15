@@ -45,12 +45,28 @@ export default async function FeaturePage({params}: FeaturePageProps) {
 
         {feature.comment && <p className="meta">Комментарий: {feature.comment}</p>}
 
-        {feature.comment && <p className="meta">Комментарий: {feature.comment}</p>}
-
         {article && (
           <p className="meta" style={{marginTop: "8px"}}>
             Статья базы знаний: <Link href={`/knowledge/${article.id}`}>{article.title}</Link>
           </p>
+        )}
+
+        {feature.relatedFeatureIds && feature.relatedFeatureIds.length > 0 && (
+          <div style={{marginTop: "16px"}}>
+            <p className="meta">Связанные возможности:</p>
+            <ul>
+              {feature.relatedFeatureIds.map((relatedId) => {
+                const relatedFeature = getFeatures().find((f) => f.id === relatedId);
+                if (!relatedFeature) return null;
+
+                return (
+                  <li key={relatedId}>
+                    <Link href={`/features/${relatedFeature.id}`}>{relatedFeature.name}</Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         )}
       </div>
     </main>

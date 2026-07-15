@@ -9,4 +9,5 @@ export const sitemapXmlFeature: Feature = {
   estimatedHours: {min: 1, max: 2},
   priceRange: {min: 30, max: 50},
   articleId: 'sitemap-xml-explained',
+  relatedFeatureIds: ['robots-txt', 'google-search-console'],
 };

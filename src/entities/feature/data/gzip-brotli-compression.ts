@@ -8,5 +8,6 @@ export const gzipBrotliCompressionFeature: Feature = {
   status: "included",
   estimatedHours: {min: 1, max: 1},
   priceRange:{min: 30, max: 50},
-  articleId: 'gzip-brotli-compression-explained'
+  articleId: 'gzip-brotli-compression-explained',
+  relatedFeatureIds: ['css-js-minification', 'static-caching'],
 };

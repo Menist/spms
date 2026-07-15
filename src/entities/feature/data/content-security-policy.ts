@@ -9,5 +9,6 @@ export const contentSecurityPolicyFeature: Feature = {
   estimatedHours: {min: 2, max: 4},
   comment: "Список доверенных источников настраивается индивидуально под используемые сервисы (аналитика, CDN, формы).",
   articleId: 'csp-explained',
-  priceRange: {min: 80, max: 150}
+  priceRange: {min: 80, max: 150},
+  relatedFeatureIds: ["security-headers", "rate-limiting"],
 };

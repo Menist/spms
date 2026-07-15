@@ -1,4 +1,4 @@
-import type { Feature } from "../model";
+import {Feature} from "@/entities/feature/model";
 
 export const robotsTxtFeature: Feature = {
   id: "robots-txt",
@@ -10,4 +10,5 @@ export const robotsTxtFeature: Feature = {
   priceRange: {min: 50, max: 100},
   comment: 'Настраивается индивидуально в зависимости от структуры веб-сайта.',
   articleId: 'robots-explained',
+  relatedFeatureIds: ['sitemap-xml', 'google-search-console'],
 };

@@ -6,13 +6,13 @@ import {useSearchParams, useRouter} from "next/navigation";
 import {getProjectById, updateProject, deleteProject} from "@/entities/project/repository";
 import {getFeatures} from "@/entities/feature/repository";
 import {getClients} from "@/entities/client/repository";
-import {getProjectTemplates} from "@/entities/project-template/repository";
-import {calculateProjectEstimate} from "@/entities/project/lib/calculate-estimate";
-import type {Project} from "@/entities/project/model";
 import type {Feature} from "@/entities/feature/model";
 import type {FeatureCategory} from "@/entities/feature/category";
 import Link from "next/link";
-
+import {getProjectTemplates} from "@/entities/project-template/repository";
+import {calculateProjectEstimate} from "@/entities/project/lib/calculate-estimate";
+import {getProjectBriefByProjectId} from "@/entities/project-brief/repository";
+import type {Project} from "@/entities/project/model";
 interface ProjectPageProps {
   params: Promise<{ id: string }>;
 }
@@ -72,6 +72,7 @@ export default function ProjectPage({params}: ProjectPageProps) {
     ? getProjectTemplates().find((t) => t.id === project.templateId)
     : undefined;
   const estimate = calculateProjectEstimate(project, allFeatures);
+  const brief = getProjectBriefByProjectId(project.id);
 
   function toggleArchiveStatus() {
     if (!project) return;
@@ -155,6 +156,33 @@ export default function ProjectPage({params}: ProjectPageProps) {
           </p>
         )}
       </div>
+
+      {brief && (
+        <div className="card">
+          <h2>Бриф проекта</h2>
+          {brief.siteSections && brief.siteSections.length > 0 && (
+            <p className="meta">Структура сайта: {brief.siteSections.join(", ")}</p>
+          )}
+          {brief.materials && brief.materials.length > 0 && (
+            <p className="meta">Материалы: {brief.materials.join(", ")}</p>
+          )}
+          {brief.contentOwner && (
+            <p className="meta">
+              Наполнение: {
+              {client: "Клиент", site2u: "SITE2U", together: "Совместно"}[brief.contentOwner]
+            }
+            </p>
+          )}
+          {brief.desiredDeadline && (
+            <p className="meta">Желаемый срок: {brief.desiredDeadline}</p>
+          )}
+          {brief.additionalNotes && (
+            <p className="meta">Доп. пожелания: {brief.additionalNotes}</p>
+          )}
+        </div>
+      )}
+
+
 
       <p className="summary">
         <Link href={`/projects/${project.id}/proposal`}>Коммерческое предложение</Link>

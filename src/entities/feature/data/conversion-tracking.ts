@@ -8,5 +8,6 @@ export const conversionTrackingFeature: Feature = {
   status: "optional",
   estimatedHours: {min: 2, max: 4},
   priceRange: {min: 60, max: 120},
-  articleId: 'conversion-tracking-explained'
+  articleId: 'conversion-tracking-explained',
+  relatedFeatureIds: ['google-analytics', 'yandex-metrika'],
 };

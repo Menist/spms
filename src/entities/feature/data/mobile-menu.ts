@@ -8,5 +8,6 @@ export const mobileMenuFeature: Feature = {
   status: "included",
   estimatedHours: {min: 2, max: 4},
   priceRange:{min: 60, max: 120},
-  articleId: 'mobile-menu-explained'
+  articleId: 'mobile-menu-explained',
+  relatedFeatureIds: ['adaptive-layout'],
 };

@@ -8,5 +8,6 @@ export const cdnStaticFilesFeature: Feature = {
   status: "optional",
   estimatedHours: {min: 2, max: 4},
   priceRange: {min: 60, max: 120},
-  articleId: 'cdn-static-files-explained'
+  articleId: 'cdn-static-files-explained',
+  relatedFeatureIds: ['image-optimization', 'static-caching'],
 };

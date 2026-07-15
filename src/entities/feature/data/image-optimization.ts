@@ -8,5 +8,6 @@ export const imageOptimizationFeature: Feature = {
   status: "included",
   estimatedHours: {min: 1, max: 3},
   articleId: 'image-optimization-explained',
-  priceRange:{min: 50, max: 100}
+  priceRange:{min: 50, max: 100},
+  relatedFeatureIds: ['css-js-minification', 'cdn-static-files'],
 };

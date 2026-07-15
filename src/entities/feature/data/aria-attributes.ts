@@ -8,5 +8,6 @@ export const ariaAttributesFeature: Feature = {
   status: "optional",
   priceRange: {min: 60, max: 120},
   estimatedHours: {min: 2, max: 4},
-  articleId: 'aria-attributes-explained'
+  articleId: 'aria-attributes-explained',
+  relatedFeatureIds: ['keyboard-navigation'],
 };

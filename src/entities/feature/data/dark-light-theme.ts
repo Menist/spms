@@ -8,5 +8,6 @@ export const darkLightThemeFeature: Feature = {
   status: "optional",
   estimatedHours: {min: 4, max: 8},
   priceRange: {min: 150, max: 250},
-  articleId: 'dark-light-theme-explained'
+  articleId: 'dark-light-theme-explained',
+  relatedFeatureIds: ['scroll-animations'],
 };
