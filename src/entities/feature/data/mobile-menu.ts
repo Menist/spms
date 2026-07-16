@@ -10,4 +10,5 @@ export const mobileMenuFeature: Feature = {
   priceRange:{min: 60, max: 120},
   articleId: 'mobile-menu-explained',
   relatedFeatureIds: ['adaptive-layout'],
+  implementationResult: "На мобильных устройствах доступно компактное меню, не занимающее лишнее место на экране.",
 };

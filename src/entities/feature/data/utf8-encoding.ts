@@ -8,5 +8,6 @@ export const utf8EncodingFeature: Feature = {
   status: "included",
   estimatedHours: {min: 1, max: 1},
   priceRange:{min: 20, max: 30},
-  articleId: 'utf8-encoding-explained'
+  articleId: 'utf8-encoding-explained',
+  implementationResult: "Текст на сайте на любом языке отображается корректно, без искажения символов.",
 };

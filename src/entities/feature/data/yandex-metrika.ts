@@ -10,4 +10,5 @@ export const yandexMetrikaFeature: Feature = {
   priceRange: {min: 30, max: 50},
   articleId: 'yandex-metrika-explained',
   relatedFeatureIds: ['yandex-webmaster', 'conversion-tracking'],
+  implementationResult: "Счётчик Яндекс.Метрики установлен на сайте, статистика посещаемости и поведения пользователей доступна в личном кабинете.",
 };

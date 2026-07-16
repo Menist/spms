@@ -45,7 +45,7 @@ import {portfolioCasesFeature} from "@/entities/feature/data/portfolio-cases";
 import {multilingualFeature} from "@/entities/feature/data/multilingual";
 import {onlineChatFeature} from "@/entities/feature/data/online-chat";
 import {locationMapFeature} from "@/entities/feature/data/location-map";
-
+import {contentPopulationFeature} from "@/entities/feature/data/content-population";
 import {rateLimitingFeature} from "@/entities/feature/data/rate-limiting";
 import {recaptchaAntispamFeature} from "@/entities/feature/data/recaptcha-antispam";
 
@@ -97,7 +97,7 @@ const features: Feature[] = [
   multilingualFeature,
   onlineChatFeature,
   locationMapFeature,
-
+  contentPopulationFeature,
 ];
 
 export function getFeatures(): Feature[] {

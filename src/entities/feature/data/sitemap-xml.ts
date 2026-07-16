@@ -10,4 +10,5 @@ export const sitemapXmlFeature: Feature = {
   priceRange: {min: 30, max: 50},
   articleId: 'sitemap-xml-explained',
   relatedFeatureIds: ['robots-txt', 'google-search-console'],
+  implementationResult: "Карта сайта доступна по адресу /sitemap.xml и содержит все значимые страницы для индексации поисковыми системами.",
 };

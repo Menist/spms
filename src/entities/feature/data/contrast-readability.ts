@@ -10,4 +10,5 @@ export const contrastReadabilityFeature: Feature = {
   priceRange: {min: 30, max: 50},
   articleId: 'contrast-readability-explained',
   relatedFeatureIds: ['alt-text'],
+  implementationResult: "Контрастность текста относительно фона приведена в соответствие со стандартами доступности.",
 };

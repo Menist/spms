@@ -10,4 +10,5 @@ export const imageOptimizationFeature: Feature = {
   articleId: 'image-optimization-explained',
   priceRange:{min: 50, max: 100},
   relatedFeatureIds: ['css-js-minification', 'cdn-static-files'],
+  implementationResult: "Изображения сайта конвертированы в WebP и загружаются по мере прокрутки страницы, что ускоряет отрисовку контента.",
 };

@@ -10,4 +10,5 @@ export const darkLightThemeFeature: Feature = {
   priceRange: {min: 150, max: 250},
   articleId: 'dark-light-theme-explained',
   relatedFeatureIds: ['scroll-animations'],
+  implementationResult: "Пользователь может переключаться между тёмной и светлой темой оформления сайта.",
 };

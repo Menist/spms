@@ -45,6 +45,10 @@ export default async function FeaturePage({params}: FeaturePageProps) {
 
         {feature.comment && <p className="meta">Комментарий: {feature.comment}</p>}
 
+        {feature.implementationResult && (
+          <p className="meta" style={{marginTop: "8px"}}>Результат: {feature.implementationResult}</p>
+        )}
+
         {article && (
           <p className="meta" style={{marginTop: "8px"}}>
             Статья базы знаний: <Link href={`/knowledge/${article.id}`}>{article.title}</Link>

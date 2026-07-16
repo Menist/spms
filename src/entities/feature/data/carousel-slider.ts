@@ -8,6 +8,7 @@ export const carouselSliderFeature: Feature = {
   status: "optional",
   estimatedHours: {min: 3, max: 6},
   priceRange: {min: 90, max: 180},
-  articleId: 'scroll-animations-explained',
-  relatedFeatureIds: ['dark-light-theme', 'carousel-slider'],
+  articleId: 'carousel-slider-explained',
+  relatedFeatureIds: ['scroll-animations'],
+  implementationResult: "На сайте работает слайдер для компактного отображения нескольких изображений или блоков контента в одной области.",
 };

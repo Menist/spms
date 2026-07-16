@@ -10,4 +10,5 @@ export const googleSearchConsoleFeature: Feature = {
   priceRange: {min: 20, max: 30},
   articleId: 'google-search-console-explained',
   relatedFeatureIds: ['google-analytics'],
+  implementationResult: "Сайт подтверждён в Google Search Console, доступны данные об индексации и поисковых ошибках.",
 };

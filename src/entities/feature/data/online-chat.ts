@@ -10,4 +10,5 @@ export const onlineChatFeature: Feature = {
   priceRange: {min: 60, max: 120},
   articleId: 'online-chat-explained',
   relatedFeatureIds: ['contact-form'],
+  implementationResult: "На сайте работает виджет онлайн-чата для связи посетителей с менеджером.",
 };

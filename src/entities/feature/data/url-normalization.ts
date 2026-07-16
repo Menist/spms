@@ -10,4 +10,5 @@ export const urlNormalizationFeature: Feature = {
   priceRange:{min: 30, max: 50},
   articleId: 'url-normalization-explained',
   relatedFeatureIds: ['custom-404-page'],
+  implementationResult: "Адреса страниц сайта имеют понятную структуру, дублирующиеся варианты URL корректно перенаправляются на основной.",
 };

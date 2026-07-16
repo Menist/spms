@@ -8,5 +8,6 @@ export const multilingualFeature: Feature = {
   status: "optional",
   estimatedHours: {min: 8, max: 16},
   priceRange: {min: 250, max: 500},
-  articleId: 'multilingual-explained'
+  articleId: 'multilingual-explained',
+  implementationResult: "Посетитель может переключить язык сайта, содержимое отображается на выбранном языке.",
 };

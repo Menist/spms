@@ -10,4 +10,5 @@ export const contactFormFeature: Feature = {
   priceRange: {min: 50, max: 100},
   articleId: 'contact-form-explained',
   relatedFeatureIds: ['recaptcha-antispam', 'online-chat', 'location-map'],
+  implementationResult: "На сайте работает форма обратной связи, заявки поступают на почту или в CRM компании.",
 };

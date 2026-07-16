@@ -10,4 +10,5 @@ export const blogNewsFeature: Feature = {
   priceRange: {min: 250, max: 500},
   articleId: 'blog-news-explained',
   relatedFeatureIds: ['portfolio-cases'],
+  implementationResult: "На сайте доступен раздел блога/новостей с возможностью публикации новых материалов.",
 };

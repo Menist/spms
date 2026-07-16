@@ -10,4 +10,5 @@ export const yandexWebmasterFeature: Feature = {
   priceRange: {min: 20, max: 30},
   articleId: 'yandex-webmaster-explained',
   relatedFeatureIds: ['yandex-metrika'],
+  implementationResult: "Сайт подтверждён в Яндекс.Вебмастере, доступны данные об индексации в поиске Яндекса.",
 };

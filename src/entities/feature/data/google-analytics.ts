@@ -10,4 +10,5 @@ export const googleAnalyticsFeature: Feature = {
   priceRange: {min: 50, max: 100},
   articleId: 'analytics-explained',
   relatedFeatureIds: ['google-search-console', 'conversion-tracking'],
+  implementationResult: "Счётчик Google Analytics установлен на сайте, статистика посещаемости доступна в личном кабинете Google Analytics.",
 };

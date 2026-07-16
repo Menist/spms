@@ -22,4 +22,6 @@ export interface Feature {
   comment?: string;
   articleId?: string;
   relatedFeatureIds?: string[];
+  implementationResult?: string;
 }
+

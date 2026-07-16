@@ -10,4 +10,5 @@ export const staticCachingFeature: Feature = {
   priceRange:{min: 30, max: 60},
   articleId: 'static-caching-explained',
   relatedFeatureIds: ['gzip-brotli-compression', 'cdn-static-files'],
+  implementationResult: "Настроено кэширование статических файлов в браузере, повторные посещения сайта загружаются быстрее.",
 };

@@ -10,4 +10,5 @@ export const protectedServiceFilesFeature: Feature = {
   articleId: 'protected-service-files-explained',
   priceRange: {min: 30, max: 50},
   relatedFeatureIds: ['security-headers'],
+  implementationResult: "Прямой доступ к служебным и конфигурационным файлам сайта закрыт на уровне сервера.",
 };

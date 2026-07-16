@@ -10,4 +10,5 @@ export const breadcrumbsMicrodataFeature: Feature = {
   priceRange: {min: 30, max: 50},
   articleId: 'breadcrumbs-microdata-explained',
   relatedFeatureIds: ['schema-org'],
+  implementationResult: "На страницах сайта отображаются хлебные крошки с микроразметкой, путь страницы виден в результатах поиска.",
 };

@@ -10,4 +10,5 @@ export const conversionTrackingFeature: Feature = {
   priceRange: {min: 60, max: 120},
   articleId: 'conversion-tracking-explained',
   relatedFeatureIds: ['google-analytics', 'yandex-metrika'],
+  implementationResult: "В счётчике аналитики настроены цели на ключевые действия пользователей (отправка формы, клики по кнопкам).",
 };

@@ -10,4 +10,5 @@ export const recaptchaAntispamFeature: Feature = {
   priceRange: {min: 30, max: 60},
   relatedFeatureIds: ["contact-form", "rate-limiting"],
   articleId: 'recaptcha-antispam-explained',
+  implementationResult: "Формы сайта защищены от автоматической отправки ботами, количество спам-заявок снижено.",
 };

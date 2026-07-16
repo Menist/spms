@@ -10,4 +10,5 @@ export const cdnStaticFilesFeature: Feature = {
   priceRange: {min: 60, max: 120},
   articleId: 'cdn-static-files-explained',
   relatedFeatureIds: ['image-optimization', 'static-caching'],
+  implementationResult: "Статические файлы сайта раздаются через CDN, пользователи получают их с ближайшего сервера.",
 };

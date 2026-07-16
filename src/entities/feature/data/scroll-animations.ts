@@ -7,6 +7,8 @@ export const scrollAnimationsFeature: Feature = {
   category: "UI",
   status: "optional",
   estimatedHours: {min: 2, max: 4},
-  articleId: 'security-headers-explained',
   priceRange: {min: 60, max: 120},
+  articleId: 'scroll-animations-explained',
+  relatedFeatureIds: ['dark-light-theme', 'carousel-slider'],
+  implementationResult: "Элементы страницы плавно появляются при прокрутке, что делает восприятие сайта более живым.",
 };

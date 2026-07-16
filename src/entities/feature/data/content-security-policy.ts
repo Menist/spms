@@ -11,4 +11,5 @@ export const contentSecurityPolicyFeature: Feature = {
   articleId: 'csp-explained',
   priceRange: {min: 80, max: 150},
   relatedFeatureIds: ["security-headers", "rate-limiting"],
+  implementationResult: "Настроена политика CSP, ограничивающая источники загрузки скриптов и стилей, что снижает риск внедрения вредоносного кода.",
 };

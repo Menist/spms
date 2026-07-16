@@ -10,4 +10,5 @@ export const sslCertificateFeature: Feature = {
   priceRange: {min: 50, max: 100},
   articleId: 'ssl-explained',
   relatedFeatureIds: ["security-headers", "content-security-policy"],
+  implementationResult: "Сайт работает по HTTPS, данные между пользователем и сервером передаются в зашифрованном виде, браузеры не показывают предупреждений безопасности.",
 };

@@ -10,4 +10,5 @@ export const openGraphFeature: Feature = {
   priceRange: {min: 30, max: 50},
   articleId: 'open-graph-explained',
   relatedFeatureIds: ['schema-org', 'canonical'],
+  implementationResult: "При публикации ссылки на сайт в соцсетях и мессенджерах корректно отображаются заголовок, описание и изображение.",
 };

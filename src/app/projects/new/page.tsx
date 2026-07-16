@@ -79,12 +79,16 @@ const siteSectionOptions = [
 ];
 
 const materialOptions = [
-  "Логотип", "Тексты", "Фотографии", "Видео", "Фирменный стиль",
+  "Логотип", "Тексты", "Фотографии", "Видео", "Фирменный стиль", "Домен", "Хостинг",
 ];
-
 const NO_MATERIALS = "Ничего не подготовлено";
 
 const pageCountOptions = ["2–5 страниц", "6–10 страниц", "более 10 страниц"];
+const structureStepTitles: Record<string, string> = {
+  corporate: "Структура сайта",
+  landing: "Структура лендинга",
+  promo: "Структура промо-страницы",
+};
 
 // Шаблоны, для которых уточняется количество страниц (многостраничные сайты).
 // Лендинг и Промо-страница — всегда одна страница, шаг им не нужен.
@@ -114,6 +118,7 @@ export default function NewProjectPage() {
   const [materials, setMaterials] = useState<string[]>([]);
   const [contentOwner, setContentOwner] = useState<"client" | "site2u" | "together" | "">("");
   const [desiredDeadline, setDesiredDeadline] = useState("");
+  const [deadlineType, setDeadlineType] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
 
   useEffect(() => {
@@ -227,7 +232,7 @@ export default function NewProjectPage() {
 
       {step === 1 && (
         <div className="card">
-          <h2>Шаг 1. Клиент</h2>
+          <h2>Клиент</h2>
 
           <div className="toggle-group">
             <button
@@ -303,7 +308,7 @@ export default function NewProjectPage() {
 
       {step === 2 && (
         <div className="card">
-          <h2>Шаг 2. Название проекта</h2>
+          <h2>Название проекта</h2>
           <input
             type="text"
             value={projectName}
@@ -320,7 +325,7 @@ export default function NewProjectPage() {
 
       {step === 3 && (
         <div className="card">
-          <h2>Шаг 3. Тип сайта</h2>
+          <h2>Тип сайта</h2>
           {templates.map((template) => (
             <label key={template.id} className="checkbox-row">
               <input
@@ -341,7 +346,7 @@ export default function NewProjectPage() {
 
       {step === 4 && needsPageCount && (
         <div className="card">
-          <h2>Шаг 4. Количество страниц</h2>
+          <h2>Количество страниц</h2>
           <p className="meta">Сколько страниц ориентировочно нужно для сайта?</p>
           {pageCountOptions.map((option) => (
             <label key={option} className="checkbox-row">
@@ -363,7 +368,7 @@ export default function NewProjectPage() {
 
       {step === 5 && selectedTemplate && (
         <div className="card">
-          <h2>Шаг 5. Обязательные функции</h2>
+          <h2>Обязательные функции</h2>
           <p className="meta">Без этих функций сайт по шаблону «{selectedTemplate.name}» не будет работать корректно — они добавляются автоматически:</p>
           <ul style={{marginTop: "8px"}}>
             {selectedTemplate.requiredFeatureIds.map((id) => {
@@ -380,7 +385,7 @@ export default function NewProjectPage() {
 
       {step === 6 && (
         <div className="card">
-          <h2>Шаг 6. Структура сайта</h2>
+          <h2>{selectedTemplate ? structureStepTitles[selectedTemplate.id] ?? "Структура сайта" : "Структура сайта"}</h2>
           <p className="meta">Какие разделы должны быть на сайте?</p>
           {siteSectionOptions.map((section) => (
             <label key={section} className="checkbox-row">
@@ -401,7 +406,7 @@ export default function NewProjectPage() {
 
       {step === 7 && selectedTemplate && (
         <div className="card">
-          <h2>Шаг 7. Дополнительные функции</h2>
+          <h2>Дополнительные функции</h2>
           {selectedTemplate.optionalFeatureIds.map((id) => {
             const feature = features.find((f) => f.id === id);
             if (!feature) return null;
@@ -444,7 +449,7 @@ export default function NewProjectPage() {
 
       {step === 8 && (
         <div className="card">
-          <h2>Шаг 8. Материалы</h2>
+          <h2>Материалы</h2>
           <p className="meta">Что уже подготовлено у клиента?</p>
           {materialOptions.map((material) => (
             <label key={material} className="checkbox-row">
@@ -473,8 +478,8 @@ export default function NewProjectPage() {
 
       {step === 9 && (
         <div className="card">
-          <h2>Шаг 9. Наполнение сайта</h2>
-          <p className="meta">Кто будет заниматься наполнением?</p>
+          <h2>Наполнение сайта</h2>
+          <p className="meta">Кто будет размещать тексты, фотографии и новости на сайте?</p>
           {([
             {value: "client", label: "Клиент"},
             {value: "site2u", label: "SITE2U"},
@@ -499,25 +504,47 @@ export default function NewProjectPage() {
 
       {step === 10 && (
         <div className="card">
-          <h2>Шаг 10. Срок выполнения</h2>
+          <h2>Срок выполнения</h2>
           <p className="meta">Желаемый срок запуска</p>
-          <input
-            type="text"
-            value={desiredDeadline}
-            onChange={(e) => setDesiredDeadline(e.target.value)}
-            placeholder="Например: до 1 сентября, в течение месяца"
-            style={{width: "100%", padding: "8px", marginTop: "8px"}}
-          />
+          {(["Срочно", "До конкретной даты", "Без жёстких сроков"] as const).map((option) => (
+            <label key={option} className="checkbox-row">
+              <input
+                type="radio"
+                name="deadlineType"
+                checked={deadlineType === option}
+                onChange={() => {
+                  setDeadlineType(option);
+                  if (option !== "До конкретной даты") setDesiredDeadline(option);
+                  else setDesiredDeadline("");
+                }}
+              />
+              {option}
+            </label>
+          ))}
+          {deadlineType === "До конкретной даты" && (
+            <input
+              type="text"
+              value={desiredDeadline}
+              onChange={(e) => setDesiredDeadline(e.target.value)}
+              placeholder="Например: до 1 сентября"
+              style={{width: "100%", padding: "8px", marginTop: "8px"}}
+            />
+          )}
           <div style={{marginTop: "16px", display: "flex", gap: "8px"}}>
             <button onClick={() => setStep(9)}>Назад</button>
-            <button onClick={() => setStep(11)}>Далее</button>
+            <button
+              onClick={() => setStep(11)}
+              disabled={deadlineType === "До конкретной даты" && !desiredDeadline}
+            >
+              Далее
+            </button>
           </div>
         </div>
       )}
 
       {step === 11 && (
         <div className="card">
-          <h2>Шаг 11. Дополнительные пожелания</h2>
+          <h2> Дополнительные пожелания</h2>
           <textarea
             value={additionalNotes}
             onChange={(e) => setAdditionalNotes(e.target.value)}

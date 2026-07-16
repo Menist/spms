@@ -10,4 +10,5 @@ export const custom404PageFeature: Feature = {
   priceRange:{min: 30, max: 60},
   articleId: 'custom-404-page-explained',
   relatedFeatureIds: ['url-normalization'],
+  implementationResult: "При переходе по несуществующему адресу посетитель видит индивидуальную страницу 404 с подсказкой, что делать дальше.",
 };

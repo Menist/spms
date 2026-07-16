@@ -10,4 +10,5 @@ export const locationMapFeature: Feature = {
   priceRange: {min: 30, max: 60},
   articleId: 'location-map-explained',
   relatedFeatureIds: ['contact-form'],
+  implementationResult: "На сайте отображается карта с местоположением компании.",
 };

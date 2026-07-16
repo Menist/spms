@@ -10,4 +10,5 @@ export const adaptiveLayoutFeature: Feature = {
   priceRange:{min: 250, max: 500},
   articleId: 'adaptive-layout-explained',
   relatedFeatureIds: ['mobile-menu'],
+  implementationResult: "Сайт корректно отображается на мобильных устройствах, планшетах и десктопах с сохранением удобства использования.",
 };

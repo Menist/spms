@@ -11,4 +11,5 @@ export const robotsTxtFeature: Feature = {
   comment: 'Настраивается индивидуально в зависимости от структуры веб-сайта.',
   articleId: 'robots-explained',
   relatedFeatureIds: ['sitemap-xml', 'google-search-console'],
+  implementationResult: "Файл robots.txt настроен и доступен по адресу /robots.txt, поисковые системы корректно индексируют разрешённые разделы сайта.",
 };

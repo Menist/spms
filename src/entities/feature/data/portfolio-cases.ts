@@ -10,4 +10,5 @@ export const portfolioCasesFeature: Feature = {
   priceRange: {min: 120, max: 500},
   articleId: 'portfolio-cases-explained',
   relatedFeatureIds: ['blog-news'],
+  implementationResult: "На сайте доступен раздел портфолио с примерами выполненных работ.",
 };

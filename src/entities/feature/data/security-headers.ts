@@ -10,4 +10,5 @@ export const securityHeadersFeature: Feature = {
   articleId: 'security-headers-explained',
   priceRange: {min: 50, max: 80},
   relatedFeatureIds: ["ssl-certificate", "content-security-policy", "protected-service-files"],
+  implementationResult: "На сайте настроены HTTP-заголовки безопасности, снижающие риск встраивания сайта в чужие страницы и подмены содержимого.",
 };

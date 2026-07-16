@@ -10,4 +10,5 @@ export const gzipBrotliCompressionFeature: Feature = {
   priceRange:{min: 30, max: 50},
   articleId: 'gzip-brotli-compression-explained',
   relatedFeatureIds: ['css-js-minification', 'static-caching'],
+  implementationResult: "На сервере настроено сжатие передаваемых файлов, что ускоряет загрузку сайта для пользователей.",
 };

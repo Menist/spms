@@ -10,4 +10,5 @@ export const cssJsMinificationFeature: Feature = {
   priceRange:{min: 30, max: 50},
   articleId: 'css-js-minification-explained',
   relatedFeatureIds: ['image-optimization', 'gzip-brotli-compression'],
+  implementationResult: "CSS и JavaScript файлы сайта минифицированы, объём передаваемых данных уменьшен.",
 };

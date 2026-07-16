@@ -10,4 +10,5 @@ export const altTextFeature: Feature = {
   priceRange: {min: 30, max: 60},
   articleId: 'alt-text-explained',
   relatedFeatureIds: ['contrast-readability'],
+  implementationResult: "Все изображения сайта содержат alt-тексты, описывающие их содержимое для скринридеров и поисковых систем.",
 };

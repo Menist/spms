@@ -10,4 +10,5 @@ export const rateLimitingFeature: Feature = {
   priceRange: {min: 50, max: 100},
   relatedFeatureIds: ["security-headers", "recaptcha-antispam"],
   articleId: 'rate-limiting-explained',
+  implementationResult: "Настроено ограничение частоты запросов к формам и служебным разделам, снижающее риск подбора паролей и автоматизированных атак.",
 };

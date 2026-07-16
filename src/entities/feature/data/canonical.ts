@@ -10,4 +10,5 @@ export const canonicalFeature: Feature = {
   priceRange: {min: 20, max: 30},
   articleId: 'canonical-explained',
   relatedFeatureIds: ['schema-org', 'sitemap-xml', 'open-graph'],
+  implementationResult: "На страницах с дублирующимся контентом настроены canonical-теги, указывающие на основной адрес страницы.",
 };

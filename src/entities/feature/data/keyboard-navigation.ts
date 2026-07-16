@@ -10,4 +10,5 @@ export const keyboardNavigationFeature: Feature = {
   priceRange: {min: 60, max: 120},
   articleId: 'keyboard-navigation-explained',
   relatedFeatureIds: ['aria-attributes'],
+  implementationResult: "Все интерактивные элементы сайта доступны для управления с клавиатуры без использования мыши.",
 };

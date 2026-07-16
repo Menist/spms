@@ -11,4 +11,5 @@ export const schemaOrgFeature: Feature = {
   comment: 'Тип разметки подбирается индивидуально в зависимости от типа контента.',
   articleId: 'schema-org-explained',
   relatedFeatureIds: ['open-graph', 'canonical', 'sitemap-xml', 'breadcrumbs-microdata'],
+  implementationResult: "На страницах сайта внедрена микроразметка Schema.org соответствующего типа, поисковые системы корректно распознают содержимое.",
 };

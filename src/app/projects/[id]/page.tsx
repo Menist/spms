@@ -12,6 +12,7 @@ import Link from "next/link";
 import {getProjectTemplates} from "@/entities/project-template/repository";
 import {calculateProjectEstimate} from "@/entities/project/lib/calculate-estimate";
 import {getProjectBriefByProjectId} from "@/entities/project-brief/repository";
+import {getBriefRecommendations} from "@/entities/project-brief/lib/get-brief-recommendations";
 import type {Project} from "@/entities/project/model";
 interface ProjectPageProps {
   params: Promise<{ id: string }>;
@@ -73,6 +74,7 @@ export default function ProjectPage({params}: ProjectPageProps) {
     : undefined;
   const estimate = calculateProjectEstimate(project, allFeatures);
   const brief = getProjectBriefByProjectId(project.id);
+  const recommendations = getBriefRecommendations(brief, project.featureIds);
 
   function toggleArchiveStatus() {
     if (!project) return;
@@ -93,7 +95,13 @@ export default function ProjectPage({params}: ProjectPageProps) {
       router.push("/projects");
     }
   }
+  function addRecommendedFeature(featureId: string) {
+    if (!project) return;
 
+    const updatedFeatureIds = [...project.featureIds, featureId];
+    updateProject(project.id, {featureIds: updatedFeatureIds});
+    setProject({...project, featureIds: updatedFeatureIds});
+  }
   return (
     <main>
       {showCreatedBanner && (
@@ -160,11 +168,11 @@ export default function ProjectPage({params}: ProjectPageProps) {
       {brief && (
         <div className="card">
           <h2>Бриф проекта</h2>
-          {brief.siteSections && brief.siteSections.length > 0 && (
-            <p className="meta">Структура сайта: {brief.siteSections.join(", ")}</p>
+          {brief.pageCountRange && (
+            <p className="meta">Количество страниц: {brief.pageCountRange}</p>
           )}
-          {brief.materials && brief.materials.length > 0 && (
-            <p className="meta">Материалы: {brief.materials.join(", ")}</p>
+          {(brief.materials?.length ?? 0) > 0 && (
+            <p className="meta">Материалы: {brief.materials?.join(", ")}</p>
           )}
           {brief.contentOwner && (
             <p className="meta">
@@ -183,6 +191,33 @@ export default function ProjectPage({params}: ProjectPageProps) {
       )}
 
 
+      {recommendations.length > 0 && (
+        <div className="card" style={{borderColor: "var(--color-included)"}}>
+          <h2>Рекомендации</h2>
+          {recommendations.map((rec) => {
+            if (rec.type === "warning") {
+              return (
+                <p key={rec.id} className="meta" style={{marginTop: "8px", color: "var(--color-optional)"}}>
+                  ⚠ {rec.message}
+                </p>
+              );
+            }
+
+            const feature = rec.featureId ? allFeatures.find((f) => f.id === rec.featureId) : undefined;
+            if (!feature) return null;
+
+            return (
+              <div key={rec.id} style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "8px"}}>
+                <div>
+                  <p className="meta">{rec.message}</p>
+                  <p>Рекомендуем добавить: <strong>{feature.name}</strong></p>
+                </div>
+                <button onClick={() => addRecommendedFeature(rec.featureId!)}>Добавить</button>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <p className="summary">
         <Link href={`/projects/${project.id}/proposal`}>Коммерческое предложение</Link>

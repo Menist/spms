@@ -10,4 +10,5 @@ export const ariaAttributesFeature: Feature = {
   estimatedHours: {min: 2, max: 4},
   articleId: 'aria-attributes-explained',
   relatedFeatureIds: ['keyboard-navigation'],
+  implementationResult: "Интерактивные элементы сайта снабжены ARIA-атрибутами и корректно распознаются программами чтения с экрана.",
 };
