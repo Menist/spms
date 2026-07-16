@@ -1,5 +1,8 @@
 "use client";
+// app/projects/new/page.tsx
+export const dynamic = 'force-dynamic';
 
+// Остальной код вашей страницы...
 import {useEffect, useState} from "react";
 import {getClients, createClient} from "@/entities/client/repository";
 import {getProjects, createProject} from "@/entities/project/repository";
