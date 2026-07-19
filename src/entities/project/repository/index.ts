@@ -32,12 +32,14 @@ export function getProjectById(id: string): Project | undefined {
 }
 
 export function createProject(project: Project): void {
-  writeProjects([...readProjects(), project]);
+  writeProjects([...readProjects(), {...project, updatedAt: new Date().toISOString()}]);
 }
 
 export function updateProject(id: string, updates: Partial<Project>): void {
   const projects = readProjects().map((project) =>
-    project.id === id ? {...project, ...updates} : project
+    project.id === id
+      ? {...project, ...updates, updatedAt: new Date().toISOString()}
+      : project
   );
   writeProjects(projects);
 }

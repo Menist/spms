@@ -124,6 +124,8 @@ export default function ProjectPage({params}: ProjectPageProps) {
         <Link href="/projects/new">+ Новый проект</Link>
         {" · "}
         <Link href={`/projects/${project.id}/edit`}>Редактировать проект</Link>
+        {" · "}
+        <Link href={`/portal/${project.id}`} target="_blank" rel="noopener noreferrer">Открыть клиентский портал</Link>
       </p>
 
       <p className="meta">
@@ -144,6 +146,10 @@ export default function ProjectPage({params}: ProjectPageProps) {
 
         <p className="meta">
           Тип: {template ? template.name : "не указан"}
+        </p>
+
+        <p className="meta">
+          Клиентский портал: <Link href={`/portal/${project.id}`} target="_blank" rel="noopener noreferrer">Открыть</Link>
         </p>
 
         <p className="meta">
@@ -170,6 +176,9 @@ export default function ProjectPage({params}: ProjectPageProps) {
           <h2>Бриф проекта</h2>
           {brief.pageCountRange && (
             <p className="meta">Количество страниц: {brief.pageCountRange}</p>
+          )}
+          {(brief.siteSections?.length ?? 0) > 0 && (
+            <p className="meta">Структура сайта: {brief.siteSections?.join(", ")}</p>
           )}
           {(brief.materials?.length ?? 0) > 0 && (
             <p className="meta">Материалы: {brief.materials?.join(", ")}</p>

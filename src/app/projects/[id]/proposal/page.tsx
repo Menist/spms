@@ -61,6 +61,7 @@ export default function ProjectProposalPage({params}: ProposalPageProps) {
   const {id} = use(params);
   const [project, setProject] = useState<Project | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showPrintInstructions, setShowPrintInstructions] = useState(false);
 
   useEffect(() => {
     setProject(getProjectById(id) ?? null);
@@ -112,11 +113,45 @@ export default function ProjectProposalPage({params}: ProposalPageProps) {
     <main>
       <h1>Коммерческое предложение по проекту «{project.name}»</h1>
 
-      <p className="meta back-link">
+      <p className="meta back-link no-print">
         <Link href={`/projects/${project.id}`}>← К проекту</Link>
         {" · "}
         <Link href={`/projects/${project.id}/edit`}>Редактировать проект</Link>
       </p>
+
+      <div className="no-print" style={{marginBottom: "16px"}}>
+        <button onClick={() => setShowPrintInstructions(true)}>Экспорт в PDF</button>
+      </div>
+
+      {showPrintInstructions && (
+        <div
+          className="no-print"
+          style={{
+            position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+            background: "rgba(0,0,0,0.4)", display: "flex",
+            alignItems: "center", justifyContent: "center", zIndex: 100,
+          }}
+        >
+          <div className="card" style={{maxWidth: "400px", background: "white"}}>
+            <h2>Перед печатью</h2>
+            <p className="meta">
+              В открывшемся окне печати разверните «Дополнительные настройки» и снимите галочку
+              «Колонтитулы» (Headers and footers) — иначе браузер добавит сверху дату, а снизу адрес страницы.
+            </p>
+            <div style={{marginTop: "16px", display: "flex", gap: "8px"}}>
+              <button
+                onClick={() => {
+                  setShowPrintInstructions(false);
+                  window.print();
+                }}
+              >
+                Понятно, печатать
+              </button>
+              <button type="button" onClick={() => setShowPrintInstructions(false)}>Отмена</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="card">
         <p className="meta">Дата формирования: {formattedDate}</p>

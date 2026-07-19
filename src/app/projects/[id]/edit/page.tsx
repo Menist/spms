@@ -7,10 +7,10 @@ import {getProjectById, updateProject} from "@/entities/project/repository";
 import {getFeatures} from "@/entities/feature/repository";
 import {getProjectTemplates} from "@/entities/project-template/repository";
 import {getClients} from "@/entities/client/repository";
-import type {Project} from "@/entities/project/model";
 import type {Feature} from "@/entities/feature/model";
 import type {FeatureCategory} from "@/entities/feature/category";
 import type {Client} from "@/entities/client/model";
+import type {Project, ProjectStage} from "@/entities/project/model";
 import Link from "next/link";
 
 interface EditProjectPageProps {
@@ -41,6 +41,7 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
   const [clientId, setClientId] = useState("");
   const [clients, setClients] = useState<Client[]>([]);
   const [comment, setComment] = useState("");
+  const [stage, setStage] = useState<ProjectStage>("brief");
 
   useEffect(() => {
     const found = getProjectById(id) ?? null;
@@ -51,6 +52,8 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
     setComment(found?.comment ?? "");
     setClients(getClients());
     setIsLoaded(true);
+    setComment(found?.comment ?? "");
+    setStage(found?.stage ?? "brief");
   }, [id]);
 
   if (!isLoaded) {
@@ -94,7 +97,7 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
   }
 
   function handleSave() {
-    updateProject(id, {name: projectName, clientId, comment, featureIds});
+    updateProject(id, {name: projectName, clientId, comment, featureIds, stage});
     router.push(`/projects/${id}?saved=true`);
   }
 
@@ -139,6 +142,27 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
           rows={3}
           style={{width: "100%", padding: "8px", marginTop: "8px", fontFamily: "inherit"}}
         />
+      </div>
+      <div className="card">
+        <h2>Этап проекта</h2>
+        {([
+          {value: "brief", label: "Бриф"},
+          {value: "proposal", label: "Коммерческое предложение"},
+          {value: "tech-spec", label: "Техническое задание"},
+          {value: "development", label: "Разработка"},
+          {value: "testing", label: "Тестирование"},
+          {value: "launched", label: "Запуск"},
+        ] as const).map((option) => (
+          <label key={option.value} className="checkbox-row">
+            <input
+              type="radio"
+              name="stage"
+              checked={stage === option.value}
+              onChange={() => setStage(option.value)}
+            />
+            {option.label}
+          </label>
+        ))}
       </div>
 
       {Object.entries(grouped).map(([category, categoryFeatures]) => (

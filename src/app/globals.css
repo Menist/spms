@@ -321,6 +321,51 @@ input:focus-visible {
   display: inline-block;
   margin-bottom: 16px;
 }
+
+/* Печать / экспорт в PDF через window.print() */
+@media print {
+  @page {
+    size: A4;
+    margin: 20mm;
+  }
+
+  .nav,
+  .no-print,
+  button {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  main {
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .card {
+    border: 1px solid #ccc;
+    background: white;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  h2, h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  a {
+    color: black;
+    text-decoration: none;
+  }
+
+  .price {
+    color: black;
+  }
+}
 /* Уважение к настройке "меньше анимаций" у пользователя */
 @media (prefers-reduced-motion: reduce) {
   * {
