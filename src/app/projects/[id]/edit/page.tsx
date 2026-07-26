@@ -3,14 +3,12 @@
 import {useEffect, useState} from "react";
 import {use} from "react";
 import {useRouter} from "next/navigation";
-import {getProjectById, updateProject} from "@/entities/project/repository";
-import {getFeatures} from "@/entities/feature/repository";
 import {getProjectTemplates} from "@/entities/project-template/repository";
-import {getClients} from "@/entities/client/repository";
 import type {Feature} from "@/entities/feature/model";
 import type {FeatureCategory} from "@/entities/feature/category";
 import type {Client} from "@/entities/client/model";
 import type {Project, ProjectStage} from "@/entities/project/model";
+import type {ProjectTemplate} from "@/entities/project-template/model";
 import Link from "next/link";
 
 interface EditProjectPageProps {
@@ -35,25 +33,37 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
   const router = useRouter();
 
   const [project, setProject] = useState<Project | null>(null);
+  const [allFeatures, setAllFeatures] = useState<Feature[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [featureIds, setFeatureIds] = useState<string[]>([]);
   const [projectName, setProjectName] = useState("");
   const [clientId, setClientId] = useState("");
   const [clients, setClients] = useState<Client[]>([]);
+  const [templates, setTemplates] = useState<ProjectTemplate[]>([]);
   const [comment, setComment] = useState("");
   const [stage, setStage] = useState<ProjectStage>("brief");
 
   useEffect(() => {
-    const found = getProjectById(id) ?? null;
-    setProject(found);
-    setFeatureIds(found?.featureIds ?? []);
-    setProjectName(found?.name ?? "");
-    setClientId(found?.clientId ?? "");
-    setComment(found?.comment ?? "");
-    setClients(getClients());
-    setIsLoaded(true);
-    setComment(found?.comment ?? "");
-    setStage(found?.stage ?? "brief");
+    async function load() {
+      const projectRes = await fetch(`/api/projects/${id}`);
+      const found = projectRes.ok ? await projectRes.json() : null;
+      const features = await fetch("/api/features").then((res) => res.json());
+      const loadedClients: Client[] = await fetch("/api/clients").then((res) => res.json());
+      const loadedTemplates: ProjectTemplate[] = await fetch("/api/project-templates").then((res) => res.json());
+
+      setProject(found);
+      setAllFeatures(features);
+      setFeatureIds(found?.featureIds ?? []);
+      setProjectName(found?.name ?? "");
+      setClientId(found?.clientId ?? "");
+      setComment(found?.comment ?? "");
+      setStage(found?.stage ?? "brief");
+      setClients(loadedClients);
+      setTemplates(loadedTemplates);
+      setIsLoaded(true);
+    }
+
+    load();
   }, [id]);
 
   if (!isLoaded) {
@@ -69,11 +79,10 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
     );
   }
 
-  const allFeatures = getFeatures();
   const grouped = groupByCategory(allFeatures);
 
   const template = project.templateId
-    ? getProjectTemplates().find((t) => t.id === project.templateId)
+    ? templates.find((t) => t.id === project.templateId)
     : undefined;
   const requiredFeatureIds = template?.requiredFeatureIds ?? [];
 
@@ -96,8 +105,12 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
     );
   }
 
-  function handleSave() {
-    updateProject(id, {name: projectName, clientId, comment, featureIds, stage});
+  async function handleSave() {
+    await fetch(`/api/projects/${id}`, {
+      method: "PATCH",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({name: projectName, clientId, comment, featureIds, stage}),
+    });
     router.push(`/projects/${id}?saved=true`);
   }
 

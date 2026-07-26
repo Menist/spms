@@ -1,17 +1,14 @@
 "use client";
 
-import {useEffect, useState} from "react";
-import {use} from "react";
-import {getProjectById} from "@/entities/project/repository";
-import {getFeatures} from "@/entities/feature/repository";
-import {getArticles} from "@/entities/article/repository";
-import {getClients} from "@/entities/client/repository";
-import {getProjectTemplates} from "@/entities/project-template/repository";
-import {getProjectBriefByProjectId} from "@/entities/project-brief/repository";
+import {use, useEffect, useState} from "react";
 import {calculateProjectEstimate} from "@/entities/project/lib/calculate-estimate";
 import type {Project} from "@/entities/project/model";
 import type {Feature} from "@/entities/feature/model";
 import type {FeatureCategory} from "@/entities/feature/category";
+import type {Client} from "@/entities/client/model";
+import type {KnowledgeArticle} from "@/entities/article/model";
+import type {ProjectTemplate} from "@/entities/project-template/model";
+import type {ProjectBrief} from "@/entities/project-brief/model";
 import Link from "next/link";
 
 interface PortalPageProps {
@@ -39,6 +36,11 @@ function groupByCategory(features: Feature[]): Record<FeatureCategory, Feature[]
 export default function PortalPage({params}: PortalPageProps) {
   const {id} = use(params);
   const [project, setProject] = useState<Project | null>(null);
+  const [allFeatures, setAllFeatures] = useState<Feature[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [allArticles, setAllArticles] = useState<KnowledgeArticle[]>([]);
+  const [templates, setTemplates] = useState<ProjectTemplate[]>([]);
+  const [brief, setBrief] = useState<ProjectBrief | undefined>(undefined);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const stageOrder: {value: string; label: string}[] = [
@@ -51,8 +53,26 @@ export default function PortalPage({params}: PortalPageProps) {
   ];
 
   useEffect(() => {
-    setProject(getProjectById(id) ?? null);
-    setIsLoaded(true);
+    async function load() {
+      const projectRes = await fetch(`/api/projects/${id}`);
+      const foundProject = projectRes.ok ? await projectRes.json() : null;
+      const features = await fetch("/api/features").then((res) => res.json());
+      const loadedClients: Client[] = await fetch("/api/clients").then((res) => res.json());
+      const loadedArticles: KnowledgeArticle[] = await fetch("/api/articles").then((res) => res.json());
+      const loadedTemplates: ProjectTemplate[] = await fetch("/api/project-templates").then((res) => res.json());
+      const briefRes = await fetch(`/api/project-briefs/by-project/${id}`);
+      const loadedBrief = briefRes.ok ? await briefRes.json() : undefined;
+
+      setProject(foundProject);
+      setAllFeatures(features);
+      setClients(loadedClients);
+      setAllArticles(loadedArticles);
+      setTemplates(loadedTemplates);
+      setBrief(loadedBrief);
+      setIsLoaded(true);
+    }
+
+    load();
   }, [id]);
 
   if (!isLoaded) {
@@ -68,14 +88,12 @@ export default function PortalPage({params}: PortalPageProps) {
     );
   }
 
-  const client = getClients().find((c) => c.id === project.clientId);
-  const allFeatures = getFeatures();
-  const allArticles = getArticles();
+  const client = clients.find((c) => c.id === project.clientId);
   const projectFeatures = allFeatures.filter((f) => project.featureIds.includes(f.id));
+
   const template = project.templateId
-    ? getProjectTemplates().find((t) => t.id === project.templateId)
+    ? templates.find((t) => t.id === project.templateId)
     : undefined;
-  const brief = getProjectBriefByProjectId(project.id);
   const estimate = calculateProjectEstimate(project, allFeatures);
   const grouped = groupByCategory(projectFeatures);
 

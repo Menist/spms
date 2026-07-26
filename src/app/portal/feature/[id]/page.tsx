@@ -9,14 +9,16 @@ interface PortalFeaturePageProps {
 
 export default async function PortalFeaturePage({params}: PortalFeaturePageProps) {
   const {id} = await params;
-  const feature = getFeatures().find((f) => f.id === id);
+  const allFeatures = await getFeatures();
+  const feature = allFeatures.find((f) => f.id === id);
 
   if (!feature) {
     notFound();
   }
 
+  const allArticles = await getArticles();
   const article = feature.articleId
-    ? getArticles().find((a) => a.id === feature.articleId)
+    ? allArticles.find((a) => a.id === feature.articleId)
     : undefined;
 
   return (
@@ -43,7 +45,7 @@ export default async function PortalFeaturePage({params}: PortalFeaturePageProps
             <p className="meta">Связанные возможности:</p>
             <ul>
               {feature.relatedFeatureIds.map((relatedId) => {
-                const relatedFeature = getFeatures().find((f) => f.id === relatedId);
+                const relatedFeature = allFeatures.find((f) => f.id === relatedId);
                 if (!relatedFeature) return null;
 
                 return (

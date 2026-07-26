@@ -3,10 +3,8 @@
 import {useEffect, useState} from "react";
 import {use} from "react";
 import {useRouter} from "next/navigation";
-import {getProjectById, updateProject} from "@/entities/project/repository";
-import {getFeatures} from "@/entities/feature/repository";
-import {getClients} from "@/entities/client/repository";
-import type {Project} from "@/entities/project/model";
+import {getProjectTemplates} from "@/entities/project-template/repository";
+import type {Project, ProjectStage} from "@/entities/project/model";
 import type {Feature} from "@/entities/feature/model";
 import type {FeatureCategory} from "@/entities/feature/category";
 import type {Client} from "@/entities/client/model";
@@ -34,34 +32,35 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
   const router = useRouter();
 
   const [project, setProject] = useState<Project | null>(null);
+  const [allFeatures, setAllFeatures] = useState<Feature[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [featureIds, setFeatureIds] = useState<string[]>([]);
   const [projectName, setProjectName] = useState("");
   const [clientId, setClientId] = useState("");
   const [clients, setClients] = useState<Client[]>([]);
+  const [comment, setComment] = useState("");
+  const [stage, setStage] = useState<ProjectStage>("brief");
 
   useEffect(() => {
-    const found = getProjectById(id) ?? null;
-    setProject(found);
-    setFeatureIds(found?.featureIds ?? []);
-    setProjectName(found?.name ?? "");
-    setClientId(found?.clientId ?? "");
-    setClients(getClients());
-    setIsLoaded(true);
+    async function load() {
+      const projectRes = await fetch(`/api/projects/${id}`);
+      const found = projectRes.ok ? await projectRes.json() : null;
+      const features: Feature[] = await fetch("/api/features").then((res) => res.json());
+      const loadedClients: Client[] = await fetch("/api/clients").then((res) => res.json());
+
+      setProject(found);
+      setAllFeatures(features);
+      setFeatureIds(found?.featureIds ?? []);
+      setProjectName(found?.name ?? "");
+      setClientId(found?.clientId ?? "");
+      setComment(found?.comment ?? "");
+      setStage(found?.stage ?? "brief");
+      setClients(loadedClients);
+      setIsLoaded(true);
+    }
+
+    load();
   }, [id]);
-
-  function toggleFeature(featureId: string) {
-    setFeatureIds((current) =>
-      current.includes(featureId)
-        ? current.filter((f) => f !== featureId)
-        : [...current, featureId]
-    );
-  }
-
-  function handleSave() {
-    updateProject(id, {name: projectName, clientId, featureIds});
-    router.push(`/projects/${id}?saved=true`);
-  }
 
   if (!isLoaded) {
     return <main><p className="meta">Загрузка...</p></main>;
@@ -76,8 +75,40 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
     );
   }
 
-  const allFeatures = getFeatures();
   const grouped = groupByCategory(allFeatures);
+
+  const template = project.templateId
+    ? getProjectTemplates().find((t) => t.id === project.templateId)
+    : undefined;
+  const requiredFeatureIds = template?.requiredFeatureIds ?? [];
+
+  function toggleFeature(featureId: string) {
+    const isCurrentlyIncluded = featureIds.includes(featureId);
+
+    if (isCurrentlyIncluded && requiredFeatureIds.includes(featureId)) {
+      const feature = allFeatures.find((f) => f.id === featureId);
+      const confirmed = window.confirm(
+        `Функция «${feature?.name ?? featureId}» входит в обязательные функции шаблона «${template?.name ?? ""}». Удалить её из проекта?`
+      );
+
+      if (!confirmed) return;
+    }
+
+    setFeatureIds((current) =>
+      isCurrentlyIncluded
+        ? current.filter((f) => f !== featureId)
+        : [...current, featureId]
+    );
+  }
+
+  async function handleSave() {
+    await fetch(`/api/projects/${id}`, {
+      method: "PATCH",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({name: projectName, clientId, comment, featureIds, stage}),
+    });
+    router.push(`/projects/${id}?saved=true`);
+  }
 
   return (
     <main>
@@ -111,6 +142,39 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
         ))}
       </div>
 
+      <div className="card">
+        <h2>Комментарий проекта</h2>
+        <textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Например: клиент требует интеграцию с CRM"
+          rows={3}
+          style={{width: "100%", padding: "8px", marginTop: "8px", fontFamily: "inherit"}}
+        />
+      </div>
+
+      <div className="card">
+        <h2>Этап проекта</h2>
+        {([
+          {value: "brief", label: "Бриф"},
+          {value: "proposal", label: "Коммерческое предложение"},
+          {value: "tech-spec", label: "Техническое задание"},
+          {value: "development", label: "Разработка"},
+          {value: "testing", label: "Тестирование"},
+          {value: "launched", label: "Запуск"},
+        ] as const).map((option) => (
+          <label key={option.value} className="checkbox-row">
+            <input
+              type="radio"
+              name="stage"
+              checked={stage === option.value}
+              onChange={() => setStage(option.value)}
+            />
+            {option.label}
+          </label>
+        ))}
+      </div>
+
       {Object.entries(grouped).map(([category, categoryFeatures]) => (
         <div key={category} className="card">
           <h2>{category}</h2>
@@ -122,6 +186,11 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
                 onChange={() => toggleFeature(feature.id)}
               />
               {feature.name}
+              {requiredFeatureIds.includes(feature.id) && (
+                <span className="meta" style={{marginLeft: "8px"}}>
+                  — обязательная функция шаблона
+                </span>
+              )}
             </label>
           ))}
         </div>

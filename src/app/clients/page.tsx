@@ -1,7 +1,6 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {getClients} from "@/entities/client/repository";
 import type {Client} from "@/entities/client/model";
 import Link from "next/link";
 
@@ -10,8 +9,12 @@ export default function ClientsPage() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    setClients(getClients());
-    setIsLoaded(true);
+    fetch("/api/clients")
+      .then((res) => res.json())
+      .then((data) => {
+        setClients(data);
+        setIsLoaded(true);
+      });
   }, []);
 
   return (

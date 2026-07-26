@@ -1,16 +1,15 @@
 "use client";
-
 import {useEffect, useState} from "react";
 import {use} from "react";
-import {getProjectById} from "@/entities/project/repository";
-import {getFeatures} from "@/entities/feature/repository";
-import {getArticles} from "@/entities/article/repository";
-import {getClients} from "@/entities/client/repository";
 import {getProjectTemplates} from "@/entities/project-template/repository";
 import {calculateProjectEstimate} from "@/entities/project/lib/calculate-estimate";
 import type {Project} from "@/entities/project/model";
+import type {Feature} from "@/entities/feature/model";
 import type {FeatureCategory} from "@/entities/feature/category";
 import Link from "next/link";
+import type {Client} from "@/entities/client/model";
+import type {KnowledgeArticle} from "@/entities/article/model";
+import type {ProjectTemplate} from "@/entities/project-template/model";
 
 interface PortalProposalPageProps {
   params: Promise<{ id: string }>;
@@ -46,11 +45,30 @@ const notIncludedItems = [
 export default function PortalProposalPage({params}: PortalProposalPageProps) {
   const {id} = use(params);
   const [project, setProject] = useState<Project | null>(null);
+  const [allFeatures, setAllFeatures] = useState<Feature[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [allArticles, setAllArticles] = useState<KnowledgeArticle[]>([]);
+  const [templates, setTemplates] = useState<ProjectTemplate[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    setProject(getProjectById(id) ?? null);
-    setIsLoaded(true);
+    async function load() {
+      const projectRes = await fetch(`/api/projects/${id}`);
+      const foundProject = projectRes.ok ? await projectRes.json() : null;
+      const features = await fetch("/api/features").then((res) => res.json());
+      const loadedClients: Client[] = await fetch("/api/clients").then((res) => res.json());
+      const loadedArticles: KnowledgeArticle[] = await fetch("/api/articles").then((res) => res.json());
+      const loadedTemplates: ProjectTemplate[] = await fetch("/api/project-templates").then((res) => res.json());
+
+      setProject(foundProject);
+      setAllFeatures(features);
+      setClients(loadedClients);
+      setAllArticles(loadedArticles);
+      setTemplates(loadedTemplates);
+      setIsLoaded(true);
+    }
+
+    load();
   }, [id]);
 
   if (!isLoaded) {
@@ -61,11 +79,10 @@ export default function PortalProposalPage({params}: PortalProposalPageProps) {
     return <main><h1>Проект не найден</h1></main>;
   }
 
-  const allFeatures = getFeatures();
-  const allArticles = getArticles();
-  const client = getClients().find((c) => c.id === project.clientId);
+  const client = clients.find((c) => c.id === project.clientId);
+
   const template = project.templateId
-    ? getProjectTemplates().find((t) => t.id === project.templateId)
+    ? templates.find((t) => t.id === project.templateId)
     : undefined;
   const projectFeatures = allFeatures.filter((f) => project.featureIds.includes(f.id));
   const estimate = calculateProjectEstimate(project, allFeatures);
@@ -156,8 +173,6 @@ export default function PortalProposalPage({params}: PortalProposalPageProps) {
 
       <h2 style={{marginTop: "24px"}}>Контакты</h2>
       <p className="meta">Если у вас возникнут вопросы по коммерческому предложению, свяжитесь с нами удобным способом.</p>
-
-      <h2 style={{marginTop: "24px"}}>Контакты</h2>
       <div className="card">
         <p className="meta">SITE2U</p>
         <p className="meta">Телефон: +375 (29) 319-52-65</p>

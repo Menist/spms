@@ -309,6 +309,23 @@ input:focus-visible {
   cursor: pointer;
   font-family: var(--font-sans);
   font-size: 14px;
+
+  /* Добавленная плавность */
+  transition: background 0.2s ease-in-out,
+  border-color 0.2s ease-in-out,
+  color 0.2s ease-in-out,
+  font-weight 0.2s ease-in-out,
+  transform 0.15s ease;
+}
+
+/* Опционально: эффект при наведении */
+.toggle-button:hover {
+  transform: scale(1.02);
+}
+
+/* Опционально: эффект при нажатии */
+.toggle-button:active {
+  transform: scale(0.98);
 }
 
 .toggle-button--active {

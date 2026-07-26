@@ -9,13 +9,15 @@ interface ArticlePageProps {
 
 export default async function ArticlePage({params}: ArticlePageProps) {
   const {id} = await params;
-  const article = getArticles().find((a) => a.id === id);
+  const allArticles = await getArticles();
+  const article = allArticles.find((a) => a.id === id);
 
   if (!article) {
     notFound();
   }
 
-  const relatedFeatures = getFeatures().filter((f) => f.articleId === article.id);
+  const allFeatures = await getFeatures();
+  const relatedFeatures = allFeatures.filter((f) => f.articleId === article.id);
 
   return (
     <main>
@@ -27,7 +29,7 @@ export default async function ArticlePage({params}: ArticlePageProps) {
 
       {relatedFeatures.length > 0 && (
         <>
-          <h2 style={{marginTop: "24px"}}>Связанные фичи</h2>
+          <h2 style={{marginTop: "24px"}}>Связанные функции</h2>
           <ul>
             {relatedFeatures.map((feature) => (
               <li key={feature.id} className="card">

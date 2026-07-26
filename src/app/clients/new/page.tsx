@@ -2,7 +2,6 @@
 
 import {useState} from "react";
 import {useRouter} from "next/navigation";
-import {getClients, createClient} from "@/entities/client/repository";
 import Link from "next/link";
 
 const transliterationMap: Record<string, string> = {
@@ -47,17 +46,22 @@ export default function NewClientPage() {
   const [phone, setPhone] = useState("");
   const [contactReason, setContactReason] = useState("");
 
-  function handleCreate() {
-    const existingIds = getClients().map((c) => c.id);
+  async function handleCreate() {
+    const existingClients = await fetch("/api/clients").then((res) => res.json());
+    const existingIds = existingClients.map((c: {id: string}) => c.id);
     const newId = generateUniqueId(name, existingIds);
 
-    createClient({
-      id: newId,
-      name,
-      contactPerson,
-      phone,
-      contactDate: new Date().toISOString().slice(0, 10),
-      contactReason,
+    await fetch("/api/clients", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        id: newId,
+        name,
+        contactPerson,
+        phone,
+        contactDate: new Date().toISOString().slice(0, 10),
+        contactReason,
+      }),
     });
 
     router.push(`/clients/${newId}`);

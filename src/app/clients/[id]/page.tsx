@@ -3,8 +3,6 @@
 import {useEffect, useState} from "react";
 import {use} from "react";
 import {useRouter} from "next/navigation";
-import {getClientById, deleteClient} from "@/entities/client/repository";
-import {getProjects} from "@/entities/project/repository";
 import type {Client} from "@/entities/client/model";
 import type {Project} from "@/entities/project/model";
 import Link from "next/link";
@@ -21,14 +19,21 @@ export default function ClientPage({params}: ClientPageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const foundClient = getClientById(id) ?? null;
-    setClient(foundClient);
+    async function load() {
+      const res = await fetch(`/api/clients/${id}`);
+      const foundClient = res.ok ? await res.json() : null;
 
-    if (foundClient) {
-      setClientProjects(getProjects().filter((p) => p.clientId === foundClient.id));
+      setClient(foundClient);
+
+      if (foundClient) {
+        const allProjects = await fetch("/api/projects").then((r) => r.json());
+        setClientProjects(allProjects.filter((p: Project) => p.clientId === foundClient.id));
+      }
+
+      setIsLoaded(true);
     }
 
-    setIsLoaded(true);
+    load();
   }, [id]);
 
   if (!isLoaded) {
@@ -44,9 +49,7 @@ export default function ClientPage({params}: ClientPageProps) {
     );
   }
 
-
-
-  function handleDeleteClient() {
+  async function handleDeleteClient() {
     if (!client) return;
 
     if (clientProjects.length > 0) {
@@ -61,7 +64,7 @@ export default function ClientPage({params}: ClientPageProps) {
     );
 
     if (confirmed) {
-      deleteClient(client.id);
+      await fetch(`/api/clients/${client.id}`, {method: "DELETE"});
       router.push("/clients");
     }
   }
@@ -73,7 +76,7 @@ export default function ClientPage({params}: ClientPageProps) {
       <p className="meta back-link"><Link href="/clients">← Все клиенты</Link></p>
 
       <p className="meta">
-        <Link href={`/clients/${client.id}/edit`}>Редактировать клиента</Link>
+        <Link className='toggle-button toggle-button--active' href={`/clients/${client.id}/edit`}>Редактировать клиента</Link>
         {" "}
         <button onClick={handleDeleteClient} className="danger-button">
           Удалить клиента

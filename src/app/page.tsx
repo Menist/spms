@@ -2,7 +2,6 @@
 
 import {useEffect, useState} from "react";
 import Link from "next/link";
-import {getProjects} from "@/entities/project/repository";
 import type {Project} from "@/entities/project/model";
 
 export default function HomePage() {
@@ -10,8 +9,12 @@ export default function HomePage() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    setProjects(getProjects());
-    setIsLoaded(true);
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then((data) => {
+        setProjects(data);
+        setIsLoaded(true);
+      });
   }, []);
 
   return (
@@ -29,12 +32,6 @@ export default function HomePage() {
           </li>
         ))}
       </ul>
-
-      <p className="summary">
-        <Link href="/features">Все фичи</Link>
-        {" · "}
-        <Link href="/knowledge">База знаний</Link>
-      </p>
     </main>
   );
 }

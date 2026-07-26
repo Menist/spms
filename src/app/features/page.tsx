@@ -1,8 +1,9 @@
-import {getFeatures} from "@/entities/feature/repository";
-import {FeatureCard} from "@/entities/feature/ui/FeatureCard";
 import type {Feature} from "@/entities/feature/model";
 import type {FeatureCategory} from "@/entities/feature/category";
 import {Collapsible} from "@/shared/ui/Collapsible";
+import {getArticles} from "@/entities/article/repository";
+import {getFeatures} from "@/entities/feature/repository";
+import {FeatureCard} from "@/entities/feature/ui/FeatureCard";
 
 function groupByCategory(features: Feature[]): Record<FeatureCategory, Feature[]> {
   const result = {} as Record<FeatureCategory, Feature[]>;
@@ -31,8 +32,9 @@ function sumIncludedHours(features: Feature[]): { min: number; max: number } {
   return {min, max};
 }
 
-export default function FeaturesPage() {
-  const features = getFeatures();
+export default async function FeaturesPage() {
+  const features = await getFeatures();
+  const articles = await getArticles();
   const grouped = groupByCategory(features);
   const total = sumIncludedHours(features);
 
@@ -52,7 +54,7 @@ export default function FeaturesPage() {
           >
             <ul>
               {categoryFeatures.map((feature) => (
-                <FeatureCard key={feature.id} feature={feature} />
+                <FeatureCard key={feature.id} feature={feature} articles={articles} />
               ))}
             </ul>
           </Collapsible>

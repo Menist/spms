@@ -3,7 +3,6 @@
 import {useEffect, useState} from "react";
 import {use} from "react";
 import {useRouter} from "next/navigation";
-import {getClientById, updateClient} from "@/entities/client/repository";
 import type {Client} from "@/entities/client/model";
 import Link from "next/link";
 
@@ -24,17 +23,27 @@ export default function EditClientPage({params}: EditClientPageProps) {
   const [contactReason, setContactReason] = useState("");
 
   useEffect(() => {
-    const found = getClientById(id) ?? null;
-    setClient(found);
-    setName(found?.name ?? "");
-    setContactPerson(found?.contactPerson ?? "");
-    setPhone(found?.phone ?? "");
-    setContactReason(found?.contactReason ?? "");
-    setIsLoaded(true);
+    async function load() {
+      const res = await fetch(`/api/clients/${id}`);
+      const found = res.ok ? await res.json() : null;
+
+      setClient(found);
+      setName(found?.name ?? "");
+      setContactPerson(found?.contactPerson ?? "");
+      setPhone(found?.phone ?? "");
+      setContactReason(found?.contactReason ?? "");
+      setIsLoaded(true);
+    }
+
+    load();
   }, [id]);
 
-  function handleSave() {
-    updateClient(id, {name, contactPerson, phone, contactReason});
+  async function handleSave() {
+    await fetch(`/api/clients/${id}`, {
+      method: "PATCH",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({name, contactPerson, phone, contactReason}),
+    });
     router.push(`/clients/${id}`);
   }
 

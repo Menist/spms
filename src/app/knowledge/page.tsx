@@ -1,8 +1,8 @@
 import {getArticles} from "@/entities/article/repository";
 import {ArticleCard} from "@/entities/article/ui/ArticleCard";
 
-export default function KnowledgePage() {
-  const articles = getArticles();
+export default async function KnowledgePage() {
+  const articles = await getArticles();
 
   return (
     <main>

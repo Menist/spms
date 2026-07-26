@@ -3,17 +3,16 @@
 import {useEffect, useState} from "react";
 import {use} from "react";
 import {useSearchParams, useRouter} from "next/navigation";
-import {getProjectById, updateProject, deleteProject} from "@/entities/project/repository";
-import {getFeatures} from "@/entities/feature/repository";
-import {getClients} from "@/entities/client/repository";
 import type {Feature} from "@/entities/feature/model";
 import type {FeatureCategory} from "@/entities/feature/category";
-import Link from "next/link";
-import {getProjectTemplates} from "@/entities/project-template/repository";
+import Link from  "next/link";
 import {calculateProjectEstimate} from "@/entities/project/lib/calculate-estimate";
-import {getProjectBriefByProjectId} from "@/entities/project-brief/repository";
 import {getBriefRecommendations} from "@/entities/project-brief/lib/get-brief-recommendations";
 import type {Project} from "@/entities/project/model";
+import type {Client} from "@/entities/client/model";
+import type {ProjectTemplate} from "@/entities/project-template/model";
+import type {ProjectBrief} from "@/entities/project-brief/model";
+
 interface ProjectPageProps {
   params: Promise<{ id: string }>;
 }
@@ -36,12 +35,32 @@ export default function ProjectPage({params}: ProjectPageProps) {
   const searchParams = useSearchParams();
 
   const [project, setProject] = useState<Project | null>(null);
+  const [allFeatures, setAllFeatures] = useState<Feature[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [templates, setTemplates] = useState<ProjectTemplate[]>([]);
+  const [brief, setBrief] = useState<ProjectBrief | undefined>(undefined);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showCreatedBanner, setShowCreatedBanner] = useState(false);
 
   useEffect(() => {
-    setProject(getProjectById(id) ?? null);
-    setIsLoaded(true);
+    async function load() {
+      const projectRes = await fetch(`/api/projects/${id}`);
+      const foundProject = projectRes.ok ? await projectRes.json() : null;
+      const features = await fetch("/api/features").then((res) => res.json());
+      const loadedClients: Client[] = await fetch("/api/clients").then((res) => res.json());
+      const loadedTemplates: ProjectTemplate[] = await fetch("/api/project-templates").then((res) => res.json());
+      const briefRes = await fetch(`/api/project-briefs/by-project/${id}`);
+      const loadedBrief = briefRes.ok ? await briefRes.json() : undefined;
+
+      setProject(foundProject);
+      setAllFeatures(features);
+      setClients(loadedClients);
+      setTemplates(loadedTemplates);
+      setBrief(loadedBrief);
+      setIsLoaded(true);
+    }
+
+    load();
   }, [id]);
 
   useEffect(() => {
@@ -64,26 +83,30 @@ export default function ProjectPage({params}: ProjectPageProps) {
     );
   }
 
-  const client = getClients().find((c) => c.id === project.clientId);
-  const allFeatures = getFeatures();
+  const client = clients.find((c) => c.id === project.clientId);
   const projectFeatures = allFeatures.filter((f) =>
     project.featureIds.includes(f.id)
   );
   const template = project.templateId
-    ? getProjectTemplates().find((t) => t.id === project.templateId)
+    ? templates.find((t) => t.id === project.templateId)
     : undefined;
+
   const estimate = calculateProjectEstimate(project, allFeatures);
-  const brief = getProjectBriefByProjectId(project.id);
   const recommendations = getBriefRecommendations(brief, project.featureIds);
 
-  function toggleArchiveStatus() {
+  async function toggleArchiveStatus() {
     if (!project) return;
 
     const newStatus = project.status === "active" ? "archived" : "active";
-    updateProject(project.id, {status: newStatus});
+    await fetch(`/api/projects/${project.id}`, {
+      method: "PATCH",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({status: newStatus}),
+    });
     setProject({...project, status: newStatus});
   }
-  function handleDeleteProject() {
+
+  async function handleDeleteProject() {
     if (!project) return;
 
     const confirmed = window.confirm(
@@ -91,15 +114,26 @@ export default function ProjectPage({params}: ProjectPageProps) {
     );
 
     if (confirmed) {
-      deleteProject(project.id);
+      const res = await fetch(`/api/projects/${project.id}`, {method: "DELETE"});
+
+      if (!res.ok) {
+        window.alert("Не удалось удалить проект. Попробуйте ещё раз.");
+        return;
+      }
+
       router.push("/projects");
     }
   }
-  function addRecommendedFeature(featureId: string) {
+
+  async function addRecommendedFeature(featureId: string) {
     if (!project) return;
 
     const updatedFeatureIds = [...project.featureIds, featureId];
-    updateProject(project.id, {featureIds: updatedFeatureIds});
+    await fetch(`/api/projects/${project.id}`, {
+      method: "PATCH",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({featureIds: updatedFeatureIds}),
+    });
     setProject({...project, featureIds: updatedFeatureIds});
   }
   return (

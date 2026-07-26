@@ -9,13 +9,15 @@ interface PortalArticlePageProps {
 
 export default async function PortalArticlePage({params}: PortalArticlePageProps) {
   const {id} = await params;
-  const article = getArticles().find((a) => a.id === id);
+  const allArticles = await getArticles();
+  const article = allArticles.find((a) => a.id === id);
 
   if (!article) {
     notFound();
   }
 
-  const relatedFeatures = getFeatures().filter((f) => f.articleId === article.id);
+  const allFeatures = await getFeatures();
+  const relatedFeatures = allFeatures.filter((f) => f.articleId === article.id);
 
   return (
     <main>

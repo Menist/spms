@@ -1,0 +1,169 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+enum FeatureCategory {
+  SEO
+  Security
+  Analytics
+  UI
+  Content
+  Performance
+  Accessibility
+  Infrastructure
+}
+
+enum FeatureStatus {
+  included
+  optional
+  notRequired
+}
+
+model KnowledgeArticle {
+  id      String @id
+  title   String
+  summary String
+  content String
+
+  features Feature[]
+}
+
+model Feature {
+  id                   String          @id
+  name                 String
+  description          String
+  category             FeatureCategory
+  status               FeatureStatus
+  estimatedHoursMin    Int?
+  estimatedHoursMax    Int?
+  priceMin             Int?
+  priceMax             Int?
+  comment              String?
+  implementationResult String?
+
+  articleId String?
+  article   KnowledgeArticle? @relation(fields: [articleId], references: [id])
+
+  // Граф рекомендаций: эта функция ссылается на другие ("исходящие" связи)
+  relatedFeatures FeatureRelation[] @relation("FeatureRelations")
+  // И другие функции ссылаются на эту ("входящие" связи)
+  relatedByFeatures FeatureRelation[] @relation("RelatedFeatureRelations")
+
+  templateFeatures TemplateFeature[]
+  projectFeatures ProjectFeature[]
+}
+
+// Связующая таблица: функция ↔ связанная функция
+model FeatureRelation {
+  featureId        String
+  relatedFeatureId String
+
+  feature        Feature @relation("FeatureRelations", fields: [featureId], references: [id])
+  relatedFeature Feature @relation("RelatedFeatureRelations", fields: [relatedFeatureId], references: [id])
+
+  @@id([featureId, relatedFeatureId])
+}
+
+model ProjectTemplate {
+  id          String @id
+  name        String
+  description String
+
+  templateFeatures TemplateFeature[]
+  projects Project[]
+}
+
+// Связующая таблица: шаблон ↔ функция, с пометкой "обязательная или нет"
+model TemplateFeature {
+  templateId String
+  featureId  String
+  isRequired Boolean
+
+  template ProjectTemplate @relation(fields: [templateId], references: [id])
+  feature  Feature         @relation(fields: [featureId], references: [id])
+
+  @@id([templateId, featureId])
+}
+
+enum ProjectStatus {
+  active
+  archived
+}
+
+enum ProjectStage {
+  brief
+  proposal
+  techSpec
+  development
+  testing
+  launched
+}
+
+enum ContentOwner {
+  client
+  site2u
+  together
+}
+
+model Client {
+  id            String @id
+  name          String
+  contactPerson String
+  phone         String
+  contactDate   DateTime
+  contactReason String
+
+  projects Project[]
+}
+
+model Project {
+  id        String        @id
+  name      String
+  status    ProjectStatus @default(active)
+  comment   String?
+  stage     ProjectStage?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id])
+
+  templateId String?
+  template   ProjectTemplate? @relation(fields: [templateId], references: [id])
+
+  brief           ProjectBrief?
+  projectFeatures ProjectFeature[]
+}
+
+// Связующая таблица: проект ↔ функция
+model ProjectFeature {
+  projectId String
+  featureId String
+
+  project Project @relation(fields: [projectId], references: [id])
+  feature Feature @relation(fields: [featureId], references: [id])
+
+  @@id([projectId, featureId])
+}
+
+model ProjectBrief {
+  id              String        @id
+  projectId       String        @unique
+  pageCountRange  String?
+  siteSections    String[]
+  materials       String[]
+  contentOwner    ContentOwner?
+  desiredDeadline String?
+  additionalNotes String?
+
+  project Project @relation(fields: [projectId], references: [id])
+}

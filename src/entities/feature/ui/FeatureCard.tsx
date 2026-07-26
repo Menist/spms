@@ -1,13 +1,14 @@
 import type {Feature} from "@/entities/feature/model";
-import {getArticles} from "@/entities/article/repository";
+import type {KnowledgeArticle} from "@/entities/article/model";
 import Link from "next/link";
 
 interface FeatureCardProps {
   feature: Feature;
+  articles: KnowledgeArticle[];
 }
 
-export function FeatureCard({feature}: FeatureCardProps) {
-  const article = getArticles().find((a) => a.id === feature.articleId);
+export function FeatureCard({feature, articles}: FeatureCardProps) {
+  const article = articles.find((a) => a.id === feature.articleId);
 
   return (
     <li className="card">

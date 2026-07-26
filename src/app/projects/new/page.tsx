@@ -1,15 +1,10 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {getClients, createClient} from "@/entities/client/repository";
-import {getProjects, createProject} from "@/entities/project/repository";
-import {getProjectTemplates} from "@/entities/project-template/repository";
-import {getFeatures} from "@/entities/feature/repository";
-import {createProjectBrief} from "@/entities/project-brief/repository";
-import type {Client} from "@/entities/client/model";
 import type {Feature} from "@/entities/feature/model";
 import type {ProjectTemplate} from "@/entities/project-template/model";
 import {useRouter, useSearchParams} from "next/navigation";
+import {Client} from "@/entities/client/model";
 
 const transliterationMap: Record<string, string> = {
   а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "e", ж: "zh",
@@ -96,11 +91,12 @@ const TEMPLATES_WITH_PAGE_COUNT = ["corporate"];
 
 export default function NewProjectPage() {
   const router = useRouter();
-  const templates = getProjectTemplates();
-  const features = getFeatures();
   const searchParams = useSearchParams();
 
+  const [templates, setTemplates] = useState<ProjectTemplate[]>([]);
+  const [features, setFeatures] = useState<Feature[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
+
   const [clientMode, setClientMode] = useState<"existing" | "new">("existing");
 
   const [step, setStep] = useState(1);
@@ -111,7 +107,7 @@ export default function NewProjectPage() {
   const [newClientReason, setNewClientReason] = useState("");
 
   const [projectName, setProjectName] = useState("");
-  const [templateId, setTemplateId] = useState(templates[0]?.id ?? "");
+  const [templateId, setTemplateId] = useState("");
   const [pageCountRange, setPageCountRange] = useState("");
   const [siteSections, setSiteSections] = useState<string[]>([]);
   const [optionalFeatureIds, setOptionalFeatureIds] = useState<string[]>([]);
@@ -122,19 +118,30 @@ export default function NewProjectPage() {
   const [additionalNotes, setAdditionalNotes] = useState("");
 
   useEffect(() => {
-    const loadedClients = getClients();
-    setClients(loadedClients);
+    async function load() {
+      const loadedClients: Client[] = await fetch("/api/clients").then((res) => res.json());
+      const loadedFeatures = await fetch("/api/features").then((res) => res.json());
+      const loadedTemplates: ProjectTemplate[] = await fetch("/api/project-templates").then((res) => res.json());
 
-    const clientIdFromUrl = searchParams.get("clientId");
-    const matchedClient = loadedClients.find((c) => c.id === clientIdFromUrl);
+      setClients(loadedClients);
+      setFeatures(loadedFeatures);
+      setTemplates(loadedTemplates);
+      setTemplateId(loadedTemplates[0]?.id ?? "");
 
-    if (matchedClient) {
-      setClientId(matchedClient.id);
-      setClientMode("existing");
-    } else {
-      setClientId(loadedClients[0]?.id ?? "");
+      const clientIdFromUrl = searchParams.get("clientId");
+      const matchedClient = loadedClients.find((c) => c.id === clientIdFromUrl);
+
+      if (matchedClient) {
+        setClientId(matchedClient.id);
+        setClientMode("existing");
+      } else {
+        setClientId(loadedClients[0]?.id ?? "");
+      }
     }
+
+    load();
   }, []);
+
 
   const selectedTemplate = templates.find((t) => t.id === templateId);
   const needsPageCount = selectedTemplate ? TEMPLATES_WITH_PAGE_COUNT.includes(selectedTemplate.id) : false;
@@ -176,49 +183,64 @@ export default function NewProjectPage() {
     });
   }
 
-  function handleCreateProject() {
-    if (!selectedTemplate) return;
+    async function handleCreateProject() {
+      if (!selectedTemplate) return;
 
-    let finalClientId = clientId;
+      let finalClientId = clientId;
 
-    if (clientMode === "new") {
-      const existingClientIds = getClients().map((c) => c.id);
-      const newId = generateUniqueId(newClientName, existingClientIds);
+      if (clientMode === "new") {
+        const existingClients = await fetch("/api/clients").then((res) => res.json());
+        const existingClientIds = existingClients.map((c: {id: string}) => c.id);
+        const newId = generateUniqueId(newClientName, existingClientIds);
 
-      createClient({
-        id: newId,
-        name: newClientName,
-        contactPerson: newClientContactPerson,
-        phone: newClientPhone,
-        contactDate: new Date().toISOString().slice(0, 10),
-        contactReason: newClientReason,
+        await fetch("/api/clients", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({
+            id: newId,
+            name: newClientName,
+            contactPerson: newClientContactPerson,
+            phone: newClientPhone,
+            contactDate: new Date().toISOString().slice(0, 10),
+            contactReason: newClientReason,
+          }),
+        });
+
+        finalClientId = newId;
+      }
+      const existingProjects = await fetch("/api/projects").then((res) => res.json());
+      const existingProjectIds = existingProjects.map((p: {id: string}) => p.id);
+      const newProjectId = generateUniqueId(projectName, existingProjectIds);
+
+      await fetch("/api/projects", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          id: newProjectId,
+          name: projectName,
+          clientId: finalClientId,
+          featureIds: [...selectedTemplate.requiredFeatureIds, ...optionalFeatureIds],
+          status: "active",
+          templateId: selectedTemplate.id,
+        }),
       });
 
-      finalClientId = newId;
-    }
+      await fetch("/api/project-briefs", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          id: generateUniqueId(`brief-${newProjectId}`, []),
+          projectId: newProjectId,
+          pageCountRange: needsPageCount ? pageCountRange : undefined,
+          siteSections,
+          materials,
+          contentOwner: contentOwner || undefined,
+          desiredDeadline,
+          additionalNotes,
+        }),
+      });
 
-    const existingProjectIds = getProjects().map((p) => p.id);
-    const newProjectId = generateUniqueId(projectName, existingProjectIds);
-
-    createProject({
-      id: newProjectId,
-      name: projectName,
-      clientId: finalClientId,
-      featureIds: [...selectedTemplate.requiredFeatureIds, ...optionalFeatureIds],
-      status: "active",
-      templateId: selectedTemplate.id,
-    });
-
-    createProjectBrief({
-      id: generateUniqueId(`brief-${newProjectId}`, []),
-      projectId: newProjectId,
-      pageCountRange: needsPageCount ? pageCountRange : undefined,
-      siteSections,
-      materials,
-      contentOwner: contentOwner || undefined,
-      desiredDeadline,
-      additionalNotes,
-    });
+      router.push(`/projects/${newProjectId}?created=true`);
 
     router.push(`/projects/${newProjectId}?created=true`);
   }

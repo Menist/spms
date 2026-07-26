@@ -1,7 +1,6 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {getProjects} from "@/entities/project/repository";
 import type {Project} from "@/entities/project/model";
 import Link from "next/link";
 
@@ -10,8 +9,12 @@ export default function ArchivedProjectsPage() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    setProjects(getProjects());
-    setIsLoaded(true);
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then((data) => {
+        setProjects(data);
+        setIsLoaded(true);
+      });
   }, []);
 
   const archivedProjects = projects.filter((p) => p.status === "archived");
