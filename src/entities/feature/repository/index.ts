@@ -26,3 +26,26 @@ export async function getFeatures(): Promise<Feature[]> {
     relatedFeatureIds: row.relatedFeatures.map((r) => r.relatedFeatureId),
   }));
 }
+
+export async function updateFeature(id: string, updates: {
+  description?: string;
+  estimatedHoursMin?: number;
+  estimatedHoursMax?: number;
+  priceMin?: number;
+  priceMax?: number;
+  comment?: string;
+  implementationResult?: string;
+}): Promise<void> {
+  await prisma.feature.update({
+    where: {id},
+    data: {
+      ...(updates.description !== undefined && {description: updates.description}),
+      ...(updates.estimatedHoursMin !== undefined && {estimatedHoursMin: updates.estimatedHoursMin}),
+      ...(updates.estimatedHoursMax !== undefined && {estimatedHoursMax: updates.estimatedHoursMax}),
+      ...(updates.priceMin !== undefined && {priceMin: updates.priceMin}),
+      ...(updates.priceMax !== undefined && {priceMax: updates.priceMax}),
+      ...(updates.comment !== undefined && {comment: updates.comment}),
+      ...(updates.implementationResult !== undefined && {implementationResult: updates.implementationResult}),
+    },
+  });
+}

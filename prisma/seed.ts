@@ -58,7 +58,7 @@ async function main() {
   }
   console.log("Связи между функциями загружены");
 
-  const templates = getProjectTemplates();
+  const templates = await getProjectTemplates();
   for (const template of templates) {
     await prisma.projectTemplate.upsert({
       where: {id: template.id},
