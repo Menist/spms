@@ -85,11 +85,9 @@ const structureStepTitles: Record<string, string> = {
   promo: "Структура промо-страницы",
 };
 
-// Шаблоны, для которых уточняется количество страниц (многостраничные сайты).
-// Лендинг и Промо-страница — всегда одна страница, шаг им не нужен.
 const TEMPLATES_WITH_PAGE_COUNT = ["corporate"];
 
-export default function NewProjectPage() {
+function NewProjectPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -581,5 +579,14 @@ export default function NewProjectPage() {
         </div>
       )}
     </main>
+  );
+}
+import {Suspense} from "react";
+
+export default function NewProjectPage() {
+  return (
+    <Suspense fallback={<main><p className="meta">Загрузка...</p></main>}>
+      <NewProjectPageContent />
+    </Suspense>
   );
 }

@@ -3,11 +3,11 @@
 import {useEffect, useState} from "react";
 import {use} from "react";
 import {useRouter} from "next/navigation";
-import {getProjectTemplates} from "@/entities/project-template/repository";
 import type {Project, ProjectStage} from "@/entities/project/model";
 import type {Feature} from "@/entities/feature/model";
 import type {FeatureCategory} from "@/entities/feature/category";
 import type {Client} from "@/entities/client/model";
+import type {ProjectTemplate} from "@/entities/project-template/model";
 import Link from "next/link";
 
 interface EditProjectPageProps {
@@ -38,6 +38,7 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
   const [projectName, setProjectName] = useState("");
   const [clientId, setClientId] = useState("");
   const [clients, setClients] = useState<Client[]>([]);
+  const [templates, setTemplates] = useState<ProjectTemplate[]>([]);
   const [comment, setComment] = useState("");
   const [stage, setStage] = useState<ProjectStage>("brief");
 
@@ -47,6 +48,7 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
       const found = projectRes.ok ? await projectRes.json() : null;
       const features: Feature[] = await fetch("/api/features").then((res) => res.json());
       const loadedClients: Client[] = await fetch("/api/clients").then((res) => res.json());
+      const loadedTemplates: ProjectTemplate[] = await fetch("/api/project-templates").then((res) => res.json());
 
       setProject(found);
       setAllFeatures(features);
@@ -56,6 +58,7 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
       setComment(found?.comment ?? "");
       setStage(found?.stage ?? "brief");
       setClients(loadedClients);
+      setTemplates(loadedTemplates);
       setIsLoaded(true);
     }
 
@@ -78,7 +81,7 @@ export default function EditProjectPage({params}: EditProjectPageProps) {
   const grouped = groupByCategory(allFeatures);
 
   const template = project.templateId
-    ? getProjectTemplates().find((t) => t.id === project.templateId)
+    ? templates.find((t) => t.id === project.templateId)
     : undefined;
   const requiredFeatureIds = template?.requiredFeatureIds ?? [];
 
