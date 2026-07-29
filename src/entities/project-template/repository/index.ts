@@ -18,3 +18,15 @@ export async function getProjectTemplates(): Promise<ProjectTemplate[]> {
       .map((tf) => tf.featureId),
   }));
 }
+export async function updateProjectTemplate(id: string, updates: {
+  name?: string;
+  description?: string;
+}): Promise<void> {
+  await prisma.projectTemplate.update({
+    where: {id},
+    data: {
+      ...(updates.name !== undefined && {name: updates.name}),
+      ...(updates.description !== undefined && {description: updates.description}),
+    },
+  });
+}

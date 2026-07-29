@@ -4,7 +4,7 @@ import {getClientById, updateClient, deleteClient} from "@/entities/client/repos
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
-
+export const dynamic = "force-dynamic";
 export async function GET(request: Request, {params}: RouteParams) {
   const {id} = await params;
   const client = await getClientById(id);

@@ -4,7 +4,7 @@ import {getProjectBriefByProjectId} from "@/entities/project-brief/repository";
 interface RouteParams {
   params: Promise<{ projectId: string }>;
 }
-
+export const dynamic = "force-dynamic";
 export async function GET(request: Request, {params}: RouteParams) {
   const {projectId} = await params;
   const brief = await getProjectBriefByProjectId(projectId);

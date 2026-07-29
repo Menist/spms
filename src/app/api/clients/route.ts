@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 import {getClients, createClient} from "@/entities/client/repository";
-
+export const dynamic = "force-dynamic";
 export async function GET() {
   const clients = await getClients();
   return NextResponse.json(clients);
