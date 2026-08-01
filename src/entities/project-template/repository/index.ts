@@ -21,6 +21,8 @@ export async function getProjectTemplates(): Promise<ProjectTemplate[]> {
 export async function updateProjectTemplate(id: string, updates: {
   name?: string;
   description?: string;
+  requiredFeatureIds?: string[];
+  optionalFeatureIds?: string[];
 }): Promise<void> {
   await prisma.projectTemplate.update({
     where: {id},
@@ -29,4 +31,18 @@ export async function updateProjectTemplate(id: string, updates: {
       ...(updates.description !== undefined && {description: updates.description}),
     },
   });
+
+  if (updates.requiredFeatureIds !== undefined || updates.optionalFeatureIds !== undefined) {
+    await prisma.templateFeature.deleteMany({where: {templateId: id}});
+
+    const requiredIds = updates.requiredFeatureIds ?? [];
+    const optionalIds = updates.optionalFeatureIds ?? [];
+
+    await prisma.templateFeature.createMany({
+      data: [
+        ...requiredIds.map((featureId) => ({templateId: id, featureId, isRequired: true})),
+        ...optionalIds.map((featureId) => ({templateId: id, featureId, isRequired: false})),
+      ],
+    });
+  }
 }
