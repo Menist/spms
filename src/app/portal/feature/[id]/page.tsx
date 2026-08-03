@@ -36,7 +36,7 @@ export default async function PortalFeaturePage({params}: PortalFeaturePageProps
 
         {article && (
           <p className="meta" style={{marginTop: "8px"}}>
-            Статья базы знаний: <Link href={`/knowledge/${article.id}`}>{article.title}</Link>
+            Статья базы знаний: <Link href={`/portal/knowledge/${article.id}`}>{article.title}</Link>
           </p>
         )}
 
