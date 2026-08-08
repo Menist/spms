@@ -1,8 +1,9 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {Suspense, useEffect, useState} from "react";
 import type {Feature} from "@/entities/feature/model";
 import type {ProjectTemplate} from "@/entities/project-template/model";
+import type {BriefQuestionOption} from "@/entities/brief-question/model";
 import {useRouter, useSearchParams} from "next/navigation";
 import {Client} from "@/entities/client/model";
 
@@ -68,17 +69,6 @@ function getSuggestedFeatureIds(
   return Array.from(suggested);
 }
 
-const siteSectionOptions = [
-  "Главная", "О компании", "Услуги", "Каталог", "Портфолио",
-  "Цены", "Новости", "Блог", "FAQ", "Контакты",
-];
-
-const materialOptions = [
-  "Логотип", "Тексты", "Фотографии", "Видео", "Фирменный стиль", "Домен", "Хостинг",
-];
-const NO_MATERIALS = "Ничего не подготовлено";
-
-const pageCountOptions = ["2–5 страниц", "6–10 страниц", "более 10 страниц"];
 const structureStepTitles: Record<string, string> = {
   corporate: "Структура сайта",
   landing: "Структура лендинга",
@@ -94,6 +84,7 @@ function NewProjectPageContent() {
   const [templates, setTemplates] = useState<ProjectTemplate[]>([]);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
+  const [briefOptions, setBriefOptions] = useState<BriefQuestionOption[]>([]);
 
   const [clientMode, setClientMode] = useState<"existing" | "new">("existing");
 
@@ -120,11 +111,13 @@ function NewProjectPageContent() {
       const loadedClients: Client[] = await fetch("/api/clients").then((res) => res.json());
       const loadedFeatures = await fetch("/api/features").then((res) => res.json());
       const loadedTemplates: ProjectTemplate[] = await fetch("/api/project-templates").then((res) => res.json());
+      const loadedBriefOptions: BriefQuestionOption[] = await fetch("/api/brief-questions").then((res) => res.json());
 
       setClients(loadedClients);
       setFeatures(loadedFeatures);
       setTemplates(loadedTemplates);
       setTemplateId(loadedTemplates[0]?.id ?? "");
+      setBriefOptions(loadedBriefOptions);
 
       const clientIdFromUrl = searchParams.get("clientId");
       const matchedClient = loadedClients.find((c) => c.id === clientIdFromUrl);
@@ -140,6 +133,11 @@ function NewProjectPageContent() {
     load();
   }, []);
 
+  const siteSectionOptions = briefOptions.filter((o) => o.questionKey === "siteSections");
+  const materialOptions = briefOptions.filter((o) => o.questionKey === "materials" && !o.isExclusive);
+  const exclusiveMaterialOption = briefOptions.find((o) => o.questionKey === "materials" && o.isExclusive);
+  const pageCountOptions = briefOptions.filter((o) => o.questionKey === "pageCount");
+  const deadlineOptions = briefOptions.filter((o) => o.questionKey === "deadline");
 
   const selectedTemplate = templates.find((t) => t.id === templateId);
   const needsPageCount = selectedTemplate ? TEMPLATES_WITH_PAGE_COUNT.includes(selectedTemplate.id) : false;
@@ -167,78 +165,80 @@ function NewProjectPageContent() {
     }
   }
 
-  function toggleMaterial(material: string) {
-    if (material === NO_MATERIALS) {
-      setMaterials((current) => (current.includes(NO_MATERIALS) ? [] : [NO_MATERIALS]));
+  function toggleMaterial(label: string, isExclusive: boolean) {
+    if (isExclusive) {
+      setMaterials((current) => (current.includes(label) ? [] : [label]));
       return;
     }
 
     setMaterials((current) => {
-      const withoutNone = current.filter((m) => m !== NO_MATERIALS);
-      return withoutNone.includes(material)
-        ? withoutNone.filter((m) => m !== material)
-        : [...withoutNone, material];
+      const withoutExclusive = exclusiveMaterialOption
+        ? current.filter((m) => m !== exclusiveMaterialOption.label)
+        : current;
+
+      return withoutExclusive.includes(label)
+        ? withoutExclusive.filter((m) => m !== label)
+        : [...withoutExclusive, label];
     });
   }
 
-    async function handleCreateProject() {
-      if (!selectedTemplate) return;
+  async function handleCreateProject() {
+    if (!selectedTemplate) return;
 
-      let finalClientId = clientId;
+    let finalClientId = clientId;
 
-      if (clientMode === "new") {
-        const existingClients = await fetch("/api/clients").then((res) => res.json());
-        const existingClientIds = existingClients.map((c: {id: string}) => c.id);
-        const newId = generateUniqueId(newClientName, existingClientIds);
+    if (clientMode === "new") {
+      const existingClients = await fetch("/api/clients").then((res) => res.json());
+      const existingClientIds = existingClients.map((c: {id: string}) => c.id);
+      const newId = generateUniqueId(newClientName, existingClientIds);
 
-        await fetch("/api/clients", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({
-            id: newId,
-            name: newClientName,
-            contactPerson: newClientContactPerson,
-            phone: newClientPhone,
-            contactDate: new Date().toISOString().slice(0, 10),
-            contactReason: newClientReason,
-          }),
-        });
-
-        finalClientId = newId;
-      }
-      const existingProjects = await fetch("/api/projects").then((res) => res.json());
-      const existingProjectIds = existingProjects.map((p: {id: string}) => p.id);
-      const newProjectId = generateUniqueId(projectName, existingProjectIds);
-
-      await fetch("/api/projects", {
+      await fetch("/api/clients", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
-          id: newProjectId,
-          name: projectName,
-          clientId: finalClientId,
-          featureIds: [...selectedTemplate.requiredFeatureIds, ...optionalFeatureIds],
-          status: "active",
-          templateId: selectedTemplate.id,
+          id: newId,
+          name: newClientName,
+          contactPerson: newClientContactPerson,
+          phone: newClientPhone,
+          contactDate: new Date().toISOString().slice(0, 10),
+          contactReason: newClientReason,
         }),
       });
 
-      await fetch("/api/project-briefs", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-          id: generateUniqueId(`brief-${newProjectId}`, []),
-          projectId: newProjectId,
-          pageCountRange: needsPageCount ? pageCountRange : undefined,
-          siteSections,
-          materials,
-          contentOwner: contentOwner || undefined,
-          desiredDeadline,
-          additionalNotes,
-        }),
-      });
+      finalClientId = newId;
+    }
 
-      router.push(`/projects/${newProjectId}?created=true`);
+    const existingProjects = await fetch("/api/projects").then((res) => res.json());
+    const existingProjectIds = existingProjects.map((p: {id: string}) => p.id);
+    const newProjectId = generateUniqueId(projectName, existingProjectIds);
+
+    await fetch("/api/projects", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        id: newProjectId,
+        name: projectName,
+        clientId: finalClientId,
+        featureIds: [...selectedTemplate.requiredFeatureIds, ...optionalFeatureIds],
+        status: "active",
+        templateId: selectedTemplate.id,
+      }),
+    });
+
+    await fetch("/api/project-briefs", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        id: generateUniqueId(`brief-${newProjectId}`, []),
+        projectId: newProjectId,
+        pageCountRange: needsPageCount ? pageCountRange : undefined,
+        siteSections,
+        materials,
+        contentOwner: contentOwner || undefined,
+        desiredDeadline,
+        additionalNotes,
+      }),
+    });
 
     router.push(`/projects/${newProjectId}?created=true`);
   }
@@ -369,14 +369,14 @@ function NewProjectPageContent() {
           <h2>Количество страниц</h2>
           <p className="meta">Сколько страниц ориентировочно нужно для сайта?</p>
           {pageCountOptions.map((option) => (
-            <label key={option} className="checkbox-row">
+            <label key={option.id} className="checkbox-row">
               <input
                 type="radio"
                 name="pageCount"
-                checked={pageCountRange === option}
-                onChange={() => setPageCountRange(option)}
+                checked={pageCountRange === option.label}
+                onChange={() => setPageCountRange(option.label)}
               />
-              {option}
+              {option.label}
             </label>
           ))}
           <div style={{marginTop: "16px", display: "flex", gap: "8px"}}>
@@ -407,14 +407,14 @@ function NewProjectPageContent() {
         <div className="card">
           <h2>{selectedTemplate ? structureStepTitles[selectedTemplate.id] ?? "Структура сайта" : "Структура сайта"}</h2>
           <p className="meta">Какие разделы должны быть на сайте?</p>
-          {siteSectionOptions.map((section) => (
-            <label key={section} className="checkbox-row">
+          {siteSectionOptions.map((option) => (
+            <label key={option.id} className="checkbox-row">
               <input
                 type="checkbox"
-                checked={siteSections.includes(section)}
-                onChange={() => toggleSiteSection(section)}
+                checked={siteSections.includes(option.label)}
+                onChange={() => toggleSiteSection(option.label)}
               />
-              {section}
+              {option.label}
             </label>
           ))}
           <div style={{marginTop: "16px", display: "flex", gap: "8px"}}>
@@ -471,24 +471,26 @@ function NewProjectPageContent() {
         <div className="card">
           <h2>Материалы</h2>
           <p className="meta">Что уже подготовлено у клиента?</p>
-          {materialOptions.map((material) => (
-            <label key={material} className="checkbox-row">
+          {materialOptions.map((option) => (
+            <label key={option.id} className="checkbox-row">
               <input
                 type="checkbox"
-                checked={materials.includes(material)}
-                onChange={() => toggleMaterial(material)}
+                checked={materials.includes(option.label)}
+                onChange={() => toggleMaterial(option.label, false)}
               />
-              {material}
+              {option.label}
             </label>
           ))}
-          <label className="checkbox-row">
-            <input
-              type="checkbox"
-              checked={materials.includes(NO_MATERIALS)}
-              onChange={() => toggleMaterial(NO_MATERIALS)}
-            />
-            {NO_MATERIALS}
-          </label>
+          {exclusiveMaterialOption && (
+            <label className="checkbox-row">
+              <input
+                type="checkbox"
+                checked={materials.includes(exclusiveMaterialOption.label)}
+                onChange={() => toggleMaterial(exclusiveMaterialOption.label, true)}
+              />
+              {exclusiveMaterialOption.label}
+            </label>
+          )}
           <div style={{marginTop: "16px", display: "flex", gap: "8px"}}>
             <button onClick={() => setStep(7)}>Назад</button>
             <button onClick={() => setStep(9)}>Далее</button>
@@ -526,22 +528,22 @@ function NewProjectPageContent() {
         <div className="card">
           <h2>Срок выполнения</h2>
           <p className="meta">Желаемый срок запуска</p>
-          {(["Срочно", "До конкретной даты", "Без жёстких сроков"] as const).map((option) => (
-            <label key={option} className="checkbox-row">
+          {deadlineOptions.map((option) => (
+            <label key={option.id} className="checkbox-row">
               <input
                 type="radio"
                 name="deadlineType"
-                checked={deadlineType === option}
+                checked={deadlineType === option.label}
                 onChange={() => {
-                  setDeadlineType(option);
-                  if (option !== "До конкретной даты") setDesiredDeadline(option);
+                  setDeadlineType(option.label);
+                  if (!option.requiresText) setDesiredDeadline(option.label);
                   else setDesiredDeadline("");
                 }}
               />
-              {option}
+              {option.label}
             </label>
           ))}
-          {deadlineType === "До конкретной даты" && (
+          {deadlineOptions.find((o) => o.label === deadlineType)?.requiresText && (
             <input
               type="text"
               value={desiredDeadline}
@@ -554,7 +556,7 @@ function NewProjectPageContent() {
             <button onClick={() => setStep(9)}>Назад</button>
             <button
               onClick={() => setStep(11)}
-              disabled={deadlineType === "До конкретной даты" && !desiredDeadline}
+              disabled={Boolean(deadlineOptions.find((o) => o.label === deadlineType)?.requiresText) && !desiredDeadline}
             >
               Далее
             </button>
@@ -564,7 +566,7 @@ function NewProjectPageContent() {
 
       {step === 11 && (
         <div className="card">
-          <h2> Дополнительные пожелания</h2>
+          <h2>Дополнительные пожелания</h2>
           <textarea
             value={additionalNotes}
             onChange={(e) => setAdditionalNotes(e.target.value)}
@@ -581,7 +583,6 @@ function NewProjectPageContent() {
     </main>
   );
 }
-import {Suspense} from "react";
 
 export default function NewProjectPage() {
   return (

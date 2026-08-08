@@ -20,6 +20,10 @@ export default function AdminPage() {
           <Link href="/admin/articles">База знаний</Link>
           <p className="meta">Статьи для клиентского портала и коммерческих предложений</p>
         </li>
+        <li className="card">
+          <Link href="/admin/brief-questions">Вопросы брифа</Link>
+          <p className="meta">Варианты ответов для шагов Wizard'а: структура сайта, материалы, срок</p>
+        </li>
       </ul>
     </main>
   );

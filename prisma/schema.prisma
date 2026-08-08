@@ -167,3 +167,12 @@ model ProjectBrief {
 
   project Project @relation(fields: [projectId], references: [id])
 }
+
+model BriefQuestionOption {
+  id           String  @id @default(cuid())
+  questionKey  String
+  label        String
+  sortOrder    Int     @default(0)
+  isExclusive  Boolean @default(false)
+  requiresText Boolean @default(false)
+}
